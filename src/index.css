@@ -1,73 +1,210 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* Material Design Global Reset & Styles */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
+* {
   margin: 0;
   padding: 0;
-  min-width: 320px;
-  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Typography */
+  font-family: 'Roboto', 'Helvetica', 'Arial', system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.5;
+
+  /* Colors */
+  color-scheme: light;
+  color: #212121;
+  background-color: #FAFAFA;
+
+  /* Font smoothing */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: #FAFAFA;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Typography reset */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-weight: 500;
+  line-height: 1.2;
+  margin: 0 0 1rem 0;
+  color: #212121;
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: 1.875rem;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+h4 {
+  font-size: 1rem;
+}
+
+h5 {
+  font-size: 0.875rem;
+}
+
+h6 {
+  font-size: 0.75rem;
+}
+
+p {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1rem;
+  color: #616161;
+  margin: 0 0 0.75rem 0;
+}
+
+/* Link styles */
+a {
+  color: #B98C5A;
+  text-decoration: none;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: color 0.3s ease-in-out;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+a:hover {
+  color: #8B6A47;
+}
+
+a:focus-visible {
+  outline: 2px solid #B98C5A;
+  outline-offset: 2px;
+}
+
+/* Button reset */
+button {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+button:focus-visible {
+  outline: 2px solid #B98C5A;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Input reset */
+input,
+textarea,
+select {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1rem;
+  color: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* List reset */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #BDBDBD;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9E9E9E;
+}
+
+/* Selection styling */
+::selection {
+  background-color: #D4A574;
+  color: #FFFFFF;
+}
+
+::-moz-selection {
+  background-color: #D4A574;
+  color: #FFFFFF;
+}
+
+/* Focus visible styles */
+:focus-visible {
+  outline: 2px solid #B98C5A;
+  outline-offset: 2px;
+}
+
+/* Reduce motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-  a:hover {
-    color: #747bff;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
   }
+
   button {
-    background-color: #f9f9f9;
+    display: none;
   }
 }

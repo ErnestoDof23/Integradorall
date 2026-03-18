@@ -1,201 +1,311 @@
 import React, { useState } from 'react';
 import Button from './Button';
+import Card from './Card';
 import Canchas from './Canchas';
 import Users from './Users';
-// use football image as sidebar background (fondo removed)
+import { theme } from '../theme';
 import fondoImg from '../assets/fut.jpg';
+import { IconUser, IconDashboard, IconBall, IconUsers } from './Icons';
 
-// cancha images imported from assets
-// image imports removed; Canchas component handles its own assets
-
+/**
+ * Dashboard - Componente principal con layout sidebar + contenido
+ * Props:
+ * - user: objeto usuario actual
+ * - onLogout: callback para cerrar sesión
+ */
 function Dashboard({ user, onLogout }) {
-  // import background image for sidebar
-  const sidebarStyle = {
-    width: '260px',
-    minHeight: '100vh',
-    backgroundImage: `url(${fondoImg})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    color: '#fff',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    paddingTop: '40px',
-    boxSizing: 'border-box',
-    margin: 0,
-    padding: 0,
-    position: 'fixed',
-  };
-  // optional overlay: light transparency over the image, no green
-  // pointerEvents none so that clicks pass through to the menu
-  const sidebarOverlay = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: 'rgba(255,255,255,0.25)',
-    zIndex: 0,
-    pointerEvents: 'none',
-  };
-  const avatarStyle = {
-    width: '100px',
-    height: '100px',
-    borderRadius: '50%',
-    background: '#1e7a34',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: '16px',
-    marginTop: '20px',
-  };
-  const userNameStyle = {
-    fontWeight: 600,
-    marginBottom: '32px',
-    textAlign: 'center',
-    fontSize: '1rem',
-  };
-  const menuItem = {
-    width: '100%',
-    padding: '14px 24px',
-    textAlign: 'left',
-    cursor: 'pointer',
-    fontSize: '1.1rem',
-    transition: 'background 0.3s ease',
-  };
-  const mainStyle = {
-    flex: 1,
-    background: '#f5f5f5',
-    position: 'relative',
-    marginLeft: '260px',
-    padding: '32px',
-    boxSizing: 'border-box',
-  };
-  const cardsContainer = {
-    display: 'flex',
-    gap: '24px',
-    marginBottom: '32px',
-  };
-  const card = {
-    flex: 1,
-    background: '#fff',
-    borderRadius: '8px',
-    padding: '24px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    textAlign: 'center',
-  };
-  const chartPlaceholder = {
-    flex: 1,
-    background: '#fff',
-    borderRadius: '8px',
-    padding: '24px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    minHeight: '240px',
-  };
+  const [section, setSection] = useState(() => {
+    return localStorage.getItem('dashboardSection') || 'dashboard';
+  });
 
-  // hardcoded dashboard data (easily replaceable with props or API calls)
+  React.useEffect(() => {
+    localStorage.setItem('dashboardSection', section);
+  }, [section]);
+
+  // Dashboard stats
   const dashboardData = {
     canchasActivas: 5,
     canchasDesactivadas: 1,
     registrosHoy: 12,
   };
 
-  // section state for navigation, remember last selected in localStorage
-  const [section, setSection] = useState(() => {
-    return localStorage.getItem('dashboardSection') || 'dashboard';
+  // Estilos del sidebar
+  const sidebarStyle = {
+    width: '280px',
+    minHeight: '100vh',
+    backgroundImage: `url(${fondoImg})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    color: theme.neutral.white,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    paddingTop: theme.spacing[10],
+    boxSizing: 'border-box',
+    position: 'fixed',
+    left: 0,
+    top: 0,
+    zIndex: 100,
+  };
+
+  const sidebarOverlay = {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 0,
+    pointerEvents: 'none',
+  };
+
+  const sidebarContentStyle = {
+    position: 'relative',
+    zIndex: 1,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  };
+
+  const avatarStyle = {
+    width: '100px',
+    height: '100px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing[4],
+    boxShadow: theme.shadows[3],
+  };
+
+  const userNameStyle = {
+    fontFamily: theme.typography.fontFamily,
+    ...theme.typography.h5,
+    color: theme.neutral.white,
+    textAlign: 'center',
+    marginBottom: theme.spacing[8],
+  };
+
+  const menuItemStyle = (isActive) => ({
+    width: '100%',
+    padding: `${theme.spacing[3]} ${theme.spacing[4]}`,
+    textAlign: 'left',
+    cursor: 'pointer',
+    fontFamily: theme.typography.fontFamily,
+    fontSize: '1rem',
+    fontWeight: 500,
+    transition: theme.transitions.fast,
+    backgroundColor: isActive ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+    borderLeft: isActive ? `4px solid ${theme.primary.light}` : '4px solid transparent',
+    color: theme.neutral.white,
+    display: 'flex',
+    alignItems: 'center',
+    gap: theme.spacing[3],
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    },
   });
 
-  // write section to storage whenever it changes
-  React.useEffect(() => {
-    localStorage.setItem('dashboardSection', section);
-  }, [section]);
+  // Estilos del main
+  const mainStyle = {
+    flex: 1,
+    background: theme.neutral[100],
+    position: 'relative',
+    marginLeft: '280px',
+    padding: theme.spacing[8],
+    boxSizing: 'border-box',
+    minHeight: '100vh',
+  };
 
-  return (
-    <div style={{ display: 'flex', margin: 0, padding: 0 }}>
-      <aside style={sidebarStyle}>
-        <div style={sidebarOverlay} />
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {/* SVG User Icon */}
-          <svg width="100" height="100" viewBox="0 0 100 100" fill="#fff">
-            <circle cx="50" cy="35" r="18" />
-            <path d="M 20 75 Q 20 55 50 55 Q 80 55 80 75 Q 80 85 50 85 Q 20 85 20 75 Z" />
-          </svg>
-          <div style={userNameStyle}>{user?.fullName || user?.username}</div>
-          <div
-          style={{ ...menuItem, background: section === 'dashboard' ? 'rgba(255,255,255,0.2)' : 'transparent' }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
-          onMouseLeave={(e) => (e.currentTarget.style.background = section === 'dashboard' ? 'rgba(255,255,255,0.2)' : 'transparent')}
-          onClick={() => setSection('dashboard')}
-        >
-          Dashboard
-        </div>
-        </div>
-        {/* end inner container */}
-        <div
-          style={{ ...menuItem, background: section === 'canchas' ? 'rgba(255,255,255,0.2)' : 'transparent' }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
-          onMouseLeave={(e) => (e.currentTarget.style.background = section === 'canchas' ? 'rgba(255,255,255,0.2)' : 'transparent')}
-          onClick={() => setSection('canchas')}
-        >
-          Canchas
-        </div>
-        <div
-          style={{ ...menuItem, background: section === 'usuarios' ? 'rgba(255,255,255,0.2)' : 'transparent' }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255, 255, 255, 0.2)')}
-          onMouseLeave={(e) => (e.currentTarget.style.background = section === 'usuarios' ? 'rgba(255,255,255,0.2)' : 'transparent')}
-          onClick={() => setSection('usuarios')}
-        >
-          Usuarios
-        </div>
-      </aside>
-      <main style={mainStyle}>
-        {section === 'dashboard' && (
+  const pageHeaderStyle = {
+    fontFamily: theme.typography.fontFamily,
+    ...theme.typography.h2,
+    color: theme.neutral[900],
+    marginBottom: theme.spacing[6],
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  };
+
+  const cardsContainerStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: theme.spacing[6],
+    marginBottom: theme.spacing[8],
+  };
+
+  const statCardStyle = {
+    textAlign: 'center',
+  };
+
+  const statNumberStyle = {
+    fontFamily: theme.typography.fontFamily,
+    ...theme.typography.display,
+    color: theme.primary.main,
+    marginBottom: theme.spacing[2],
+  };
+
+  const statLabelStyle = {
+    fontFamily: theme.typography.fontFamily,
+    ...theme.typography.body2,
+    color: theme.neutral[600],
+  };
+
+  const chartsContainerStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+    gap: theme.spacing[6],
+  };
+
+  const logoutButtonStyle = {
+    position: 'absolute',
+    top: theme.spacing[6],
+    right: theme.spacing[8],
+  };
+
+  // Renderizar contenido por sección
+  const renderContent = () => {
+    switch (section) {
+      case 'canchas':
+        return <Canchas />;
+      case 'usuarios':
+        return <Users currentUser={user} />;
+      case 'dashboard':
+      default:
+        return (
           <>
-            <h2>Dashboard</h2>
-            <div style={cardsContainer}>
-              <div style={card}>
-                <div style={{ fontSize: '2.4rem', fontWeight: 600 }}>{dashboardData.canchasActivas}</div>
-                <div>Canchas Activas</div>
-              </div>
-              <div style={card}>
-                <div style={{ fontSize: '2.4rem', fontWeight: 600 }}>{dashboardData.canchasDesactivadas}</div>
-                <div>Canchas desactivadas</div>
-              </div>
-              <div style={card}>
-                <div style={{ fontSize: '2.4rem', fontWeight: 600 }}>{dashboardData.registrosHoy}</div>
-                <div>Total de registros para hoy</div>
-              </div>
+            <div style={cardsContainerStyle}>
+              <Card elevation={1} style={statCardStyle}>
+                <div style={statNumberStyle}>{dashboardData.canchasActivas}</div>
+                <div style={statLabelStyle}>Canchas Activas</div>
+              </Card>
+              <Card elevation={1} style={statCardStyle}>
+                <div style={statNumberStyle}>{dashboardData.canchasDesactivadas}</div>
+                <div style={statLabelStyle}>Canchas Desactivadas</div>
+              </Card>
+              <Card elevation={1} style={statCardStyle}>
+                <div style={statNumberStyle}>{dashboardData.registrosHoy}</div>
+                <div style={statLabelStyle}>Registros Hoy</div>
+              </Card>
             </div>
-            <div style={{ display: 'flex', gap: '24px' }}>
-              <div style={chartPlaceholder}>
-                <div style={{ fontWeight: 600, marginBottom: '12px' }}>Registros semanales por horario</div>
-                <div style={{ textAlign: 'center', marginTop: '60px' }}>Gráfico anillo</div>
-              </div>
-              <div style={chartPlaceholder}>
-                <div style={{ fontWeight: 600, marginBottom: '12px' }}>Registros de la semana</div>
-                <div style={{ textAlign: 'center', marginTop: '60px' }}>Gráfico de barras</div>
-              </div>
+
+            <div style={chartsContainerStyle}>
+              <Card elevation={1} title="Registros Semanales por Horario">
+                <div style={{ 
+                  textAlign: 'center', 
+                  padding: theme.spacing[6],
+                  color: theme.neutral[400],
+                  fontFamily: theme.typography.fontFamily,
+                }}>
+                  📊 Gráfico anillo
+                </div>
+              </Card>
+              <Card elevation={1} title="Registros de la Semana">
+                <div style={{
+                  textAlign: 'center',
+                  padding: theme.spacing[6],
+                  color: theme.neutral[400],
+                  fontFamily: theme.typography.fontFamily,
+                }}>
+                  📈 Gráfico de barras
+                </div>
+              </Card>
             </div>
           </>
-        )}
-        {section === 'canchas' && <Canchas />}
-        {section === 'usuarios' && <Users currentUser={user} />}
-        {/* logout positioned top right of main area */}
-        <Button
-          text="Cerrar sesión"
-          action={onLogout}
-          style={{
-            background: '#dc3545',
-            color: '#fff',
-            padding: '10px 18px',
-            borderRadius: '6px',
-            position: 'absolute',
-            top: '20px',
-            right: '32px',
-            fontSize: '0.95rem',
-          }}
-          hoverStyle={{ background: '#c82333' }}
-        />
+        );
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', margin: 0, padding: 0, minHeight: '100vh' }}>
+      {/* Sidebar */}
+      <aside style={sidebarStyle}>
+        <div style={sidebarOverlay} />
+        <div style={sidebarContentStyle}>
+          {/* Avatar */}
+          <div style={avatarStyle}>
+            <IconUser size={60} color={theme.neutral.white} />
+          </div>
+          
+          {/* User Name */}
+          <div style={userNameStyle}>{user?.fullName || 'Administrador'}</div>
+
+          {/* Menu Items */}
+          <div
+            style={menuItemStyle(section === 'dashboard')}
+            onClick={() => setSection('dashboard')}
+            onMouseEnter={(e) => {
+              if (section !== 'dashboard') {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (section !== 'dashboard') {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            <IconDashboard size={20} color={theme.neutral.white} />
+            Dashboard
+          </div>
+
+          <div
+            style={menuItemStyle(section === 'canchas')}
+            onClick={() => setSection('canchas')}
+            onMouseEnter={(e) => {
+              if (section !== 'canchas') {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (section !== 'canchas') {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            <IconBall size={20} color={theme.neutral.white} />
+            Canchas
+          </div>
+
+          <div
+            style={menuItemStyle(section === 'usuarios')}
+            onClick={() => setSection('usuarios')}
+            onMouseEnter={(e) => {
+              if (section !== 'usuarios') {
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (section !== 'usuarios') {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            <IconUsers size={20} color={theme.neutral.white} />
+            Usuarios
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main style={mainStyle}>
+        <div style={pageHeaderStyle}>
+          {section === 'dashboard' && 'Panel Principal'}
+          {section === 'canchas' && 'Canchas'}
+          {section === 'usuarios' && 'Usuarios'}
+
+          <Button
+            text="Cerrar sesión"
+            action={onLogout}
+            color="error"
+            variant="contained"
+            size="medium"
+            style={logoutButtonStyle}
+          />
+        </div>
+
+        {renderContent()}
       </main>
     </div>
   );
