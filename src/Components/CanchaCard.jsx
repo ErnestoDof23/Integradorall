@@ -1,58 +1,123 @@
 import React from 'react';
+import Card from './Card';
+import Badge from './Badge';
+import Button from './Button';
+import { theme } from '../theme';
+import { IconEdit, IconTrash } from './Icons';
 
-// presentational card for a single cancha
-// props:
-//   name (string)
-//   img (string url)
-//   status ("Activa"|"Inactiva")
-//   reserved (optional string)
+/**
+ * CanchaCard - Tarjeta para mostrar información de una cancha
+ * Props:
+ * - id: ID de la cancha
+ * - name: nombre de la cancha
+ * - img: URL de la imagen
+ * - type: tipo de cancha ('Cancha' o 'Auditorio')
+ * - status: 'Reservadas' | 'Disponibles'
+ * - reserved: horario de reserva (opcional)
+ * - onEdit: función para editar
+ * - onDelete: función para eliminar
+ */
+function CanchaCard({ id, name, img, type, status, reserved, onEdit, onDelete }) {
+  const [isHovered, setIsHovered] = React.useState(false);
 
-function CanchaCard({ name, img, status, reserved }) {
-  const cardStyle = {
-    background: '#fff',
-    borderRadius: '8px',
-    overflow: 'hidden',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+  const cardContainerStyle = {
     display: 'flex',
     flexDirection: 'column',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    transition: theme.transitions.fast,
+    transform: isHovered ? 'translateY(-8px)' : 'translateY(0)',
   };
-  const headerStyle = {
-    padding: '12px',
-    fontWeight: 600,
-    textAlign: 'center',
-  };
-  const imgStyle = {
+
+  const imageStyle = {
     width: '100%',
-    height: '140px',
+    height: '200px',
     objectFit: 'cover',
+    transition: theme.transitions.fast,
+    filter: isHovered ? 'brightness(0.9)' : 'brightness(1)',
   };
-  const footerStyle = {
-    padding: '12px',
-    textAlign: 'left',
-    fontSize: '0.95rem',
+
+  const contentStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing[2],
+    padding: theme.spacing[4],
+  };
+
+  const titleStyle = {
+    fontFamily: theme.typography.fontFamily,
+    ...theme.typography.h5,
+    color: theme.neutral[900],
+  };
+
+  const statusBadgeColor = status === 'Reservadas' ? 'error' : 'success';
+
+  const infoStyle = {
+    fontFamily: theme.typography.fontFamily,
+    ...theme.typography.body2,
+    color: theme.neutral[600],
+  };
+
+  const actionsContainerStyle = {
+    display: 'flex',
+    gap: theme.spacing[2],
+    marginTop: theme.spacing[3],
+    paddingTop: theme.spacing[3],
+    borderTop: `1px solid ${theme.neutral[200]}`,
   };
 
   return (
-    <div style={cardStyle}>
-      <div style={headerStyle}>{name}</div>
-      <img src={img} alt={name} style={imgStyle} />
-      <div style={footerStyle}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span>Estado:</span>
-          <span>{status}</span>
-          <span
-            style={{
-              display: 'inline-block',
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: status === 'Activa' ? '#28a745' : '#dc3545',
-            }}
-          />
+    <Card
+      elevation={isHovered ? 3 : 1}
+      style={cardContainerStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <img src={img} alt={name} style={imageStyle} />
+      <div style={contentStyle}>
+        <div style={titleStyle}>{name}</div>
+        
+        <div style={{ display: 'flex', gap: theme.spacing[2], alignItems: 'center' }}>
+          <span style={infoStyle}>Tipo:</span>
+          <Badge label={type} color="secondary" size="small" />
         </div>
-        {reserved && <div>Reservado: {reserved}</div>}
+
+        <div style={{ display: 'flex', gap: theme.spacing[2], alignItems: 'center' }}>
+          <span style={infoStyle}>Estado:</span>
+          <Badge label={status} color={statusBadgeColor} size="small" />
+        </div>
+
+        {reserved && (
+          <div style={infoStyle}>
+            <span style={{ fontWeight: 500 }}>Reservado:</span> {reserved}
+          </div>
+        )}
+
+        {/* Botones de Acción */}
+        <div style={actionsContainerStyle}>
+          <Button
+            size="small"
+            variant="contained"
+            color="info"
+            icon={<IconEdit size={16} color={theme.neutral.white} />}
+            onClick={() => onEdit && onEdit(id)}
+            style={{ flex: 1, gap: theme.spacing[1] }}
+          >
+            Modificar
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            color="error"
+            icon={<IconTrash size={16} color={theme.neutral.white} />}
+            onClick={() => onDelete && onDelete(id)}
+            style={{ flex: 1, gap: theme.spacing[1] }}
+          >
+            Eliminar
+          </Button>
+        </div>
       </div>
-    </div>
+    </Card>
   );
 }
 

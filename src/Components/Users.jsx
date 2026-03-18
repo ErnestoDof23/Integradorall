@@ -1,11 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import UserCard from './UserCard';
+import Button from './Button';
+import { showAlert } from './Alert';
 import userImg from '../assets/user.png';
 import usersData from '../data/usersData';
+import { theme } from '../theme';
 
+/**
+ * Users - Componente para gestionar y mostrar usuarios
+ * Props:
+ * - currentUser: usuario actual
+ */
 function Users({ currentUser }) {
   const [users, setUsers] = useState(() => {
-    // prefer persisted users in localStorage (updated by toggles), fallback to bundled usersData
     const master = JSON.parse(localStorage.getItem('usersData') || JSON.stringify(usersData));
     const list = master.map((u) => ({ id: u.id, name: u.fullName, role: u.role, blocked: u.blocked }));
     return [...list].sort((a, b) => a.name.localeCompare(b.name));
@@ -21,77 +28,154 @@ function Users({ currentUser }) {
   }, [users, page]);
 
   const toggleBlock = (id) => {
-    // only admins can block/unblock
     if (!currentUser || currentUser.role !== 'Administrador') {
-      alert('No eres admin');
+      showAlert(
+        'Acceso denegado',
+        'No tienes permisos para realizar esta acción.',
+        'error'
+      );
       return;
     }
 
-    // prevent blocking protected admin (e.g., Jazmin id 6) or last admin
     const master = JSON.parse(localStorage.getItem('usersData') || JSON.stringify(usersData));
     const target = master.find((m) => m.id === id);
+    
     if (!target) {
-      alert('Usuario no existe');
+      showAlert(
+        'Error',
+        'El usuario no existe en el sistema.',
+        'error'
+      );
       return;
     }
 
-    // count admins
     const adminCount = master.filter((m) => m.role === 'Administrador').length;
     if (target.role === 'Administrador' && adminCount <= 1) {
-      alert('No se puede quitar el último administrador');
+      showAlert(
+        'Operación no permitida',
+        'No se puede bloquear el último administrador del sistema.',
+        'warning'
+      );
       return;
     }
 
-    // toggle in local state and persist to master
     setUsers((u) => u.map((x) => (x.id === id ? { ...x, blocked: !x.blocked } : x)));
-    // update master array and persist
     const updatedMaster = master.map((m) => (m.id === id ? { ...m, blocked: !m.blocked } : m));
     localStorage.setItem('usersData', JSON.stringify(updatedMaster));
+
     const newTarget = updatedMaster.find((m) => m.id === id);
     if (newTarget.blocked) {
-      alert('Cuenta bloqueada');
+      showAlert(
+        'Cuenta bloqueada',
+        `La cuenta de ${newTarget.fullName} ha sido bloqueada correctamente.`,
+        'success'
+      );
     } else {
-      alert('Cuenta desbloqueada');
+      showAlert(
+        'Cuenta desbloqueada',
+        `La cuenta de ${newTarget.fullName} ha sido desbloqueada correctamente.`,
+        'success'
+      );
     }
   };
+
   const toggleAdmin = (id) => {
-    // only admins can change roles
     if (!currentUser || currentUser.role !== 'Administrador') {
-      alert('No eres admin');
+      showAlert(
+        'Acceso denegado',
+        'No tienes permisos para realizar esta acción.',
+        'error'
+      );
       return;
     }
+
     const master = JSON.parse(localStorage.getItem('usersData') || JSON.stringify(usersData));
     const target = master.find((m) => m.id === id);
-    if (!target) { alert('Usuario no existe'); return; }
-    const adminCount = master.filter((m) => m.role === 'Administrador').length;
-    // prevent removing last admin
-    if (target.role === 'Administrador' && adminCount <= 1) {
-      alert('No se puede quitar el último administrador');
+
+    if (!target) {
+      showAlert(
+        'Error',
+        'El usuario no existe en el sistema.',
+        'error'
+      );
       return;
     }
-    // toggle in local state and persist
-    setUsers((u) => u.map((x) => (x.id === id ? { ...x, role: x.role === 'Administrador' ? 'Usuario' : 'Administrador' } : x)));
-    const updatedMaster = master.map((m) => (m.id === id ? { ...m, role: m.role === 'Administrador' ? 'Usuario' : 'Administrador' } : m));
+
+    const adminCount = master.filter((m) => m.role === 'Administrador').length;
+    if (target.role === 'Administrador' && adminCount <= 1) {
+      showAlert(
+        'Operación no permitida',
+        'No se puede quitar permisos de administrador al último administrador del sistema.',
+        'warning'
+      );
+      return;
+    }
+
+    setUsers((u) =>
+      u.map((x) =>
+        x.id === id
+          ? { ...x, role: x.role === 'Administrador' ? 'Usuario' : 'Administrador' }
+          : x
+      )
+    );
+
+    const updatedMaster = master.map((m) =>
+      m.id === id
+        ? { ...m, role: m.role === 'Administrador' ? 'Usuario' : 'Administrador' }
+        : m
+    );
     localStorage.setItem('usersData', JSON.stringify(updatedMaster));
-    alert('Rol actualizado');
+
+    const newTarget = updatedMaster.find((m) => m.id === id);
+    showAlert(
+      'Rol actualizado',
+      `${newTarget.fullName} es ahora ${newTarget.role === 'Administrador' ? 'Administrador' : 'Usuario'}.`,
+      'success'
+    );
+  };
+
+  const containerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing[6],
+  };
+
+  const titleStyle = {
+    fontFamily: theme.typography.fontFamily,
+    ...theme.typography.h3,
+    color: theme.neutral[900],
+    marginBottom: theme.spacing[2],
   };
 
   const gridStyle = {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill,minmax(320px,1fr))',
-    gap: '24px',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gap: theme.spacing[6],
   };
 
-  const paginationStyle = {
-    marginTop: '24px',
+  const paginationContainerStyle = {
     display: 'flex',
     justifyContent: 'center',
-    gap: '12px',
+    gap: theme.spacing[2],
+    marginTop: theme.spacing[8],
   };
 
+  const paginationButtonStyle = (isActive) => ({
+    padding: `${theme.spacing[2]} ${theme.spacing[3]}`,
+    borderRadius: theme.borderRadius.lg,
+    border: `2px solid ${isActive ? theme.primary.main : theme.neutral[300]}`,
+    backgroundColor: isActive ? theme.primary.main : theme.neutral.white,
+    color: isActive ? theme.neutral.white : theme.neutral[700],
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: 500,
+    cursor: 'pointer',
+    transition: theme.transitions.fast,
+  });
+
   return (
-    <>
-      <h2>Usuarios</h2>
+    <div style={containerStyle}>
+      <h2 style={titleStyle}>Gestión de Usuarios</h2>
+
       <div style={gridStyle}>
         {pagedUsers.map((u) => (
           <UserCard
@@ -105,27 +189,21 @@ function Users({ currentUser }) {
           />
         ))}
       </div>
+
       {totalPages > 1 && (
-        <div style={paginationStyle}>
+        <div style={paginationContainerStyle}>
           {Array.from({ length: totalPages }, (_, i) => (
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              style={{
-                padding: '6px 10px',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                background: page === i + 1 ? '#28a745' : '#fff',
-                color: page === i + 1 ? '#fff' : '#000',
-                cursor: 'pointer',
-              }}
+              style={paginationButtonStyle(page === i + 1)}
             >
               {i + 1}
             </button>
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }
 

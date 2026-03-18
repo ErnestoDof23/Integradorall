@@ -1,42 +1,188 @@
+/* Material Design Global Styles */
+
+:root {
+  /* Primary colors */
+  --color-primary-main: #B98C5A;
+  --color-primary-light: #D4A574;
+  --color-primary-dark: #8B6A47;
+  --color-primary-text: #FFFFFF;
+
+  /* Secondary colors */
+  --color-secondary-main: #2D3A2E;
+  --color-secondary-light: #4A5950;
+  --color-secondary-dark: #1A2219;
+
+  /* Neutral colors */
+  --color-neutral-white: #FFFFFF;
+  --color-neutral-50: #FAFAFA;
+  --color-neutral-100: #F5F5F5;
+  --color-neutral-200: #EEEEEE;
+  --color-neutral-300: #E0E0E0;
+  --color-neutral-400: #BDBDBD;
+  --color-neutral-500: #9E9E9E;
+  --color-neutral-600: #757575;
+  --color-neutral-700: #616161;
+  --color-neutral-900: #212121;
+
+  /* Status colors */
+  --color-success: #4CAF50;
+  --color-error: #F44336;
+  --color-warning: #FF9800;
+  --color-info: #2196F3;
+
+  /* Spacing */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+
+  /* Shadows */
+  --shadow-1: 0px 1px 3px 0px rgba(0, 0, 0, 0.12), 0px 1px 2px 0px rgba(0, 0, 0, 0.24);
+  --shadow-2: 0px 3px 6px 0px rgba(0, 0, 0, 0.15), 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+  --shadow-3: 0px 10px 20px 0px rgba(0, 0, 0, 0.15), 0px 3px 6px 0px rgba(0, 0, 0, 0.10);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-base: 0.3s ease-in-out;
+
+  /* Border radius */
+  --border-radius-lg: 8px;
+  --border-radius-md: 4px;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Typography */
+h1 {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-neutral-900);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+h2 {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.334;
+  color: var(--color-neutral-900);
+  margin-bottom: var(--spacing-4);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+h3 {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--color-neutral-900);
 }
 
+h4 {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-neutral-900);
+}
+
+h5 {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.57;
+  color: var(--color-neutral-900);
+}
+
+h6 {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.66;
+  letter-spacing: 0.4px;
+  color: var(--color-neutral-900);
+}
+
+p {
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-neutral-700);
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-neutral-50);
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Links */
+a {
+  color: var(--color-primary-main);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* Cards */
 .card {
-  padding: 2em;
+  background-color: var(--color-neutral-white);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-1);
+  transition: box-shadow var(--transition-base);
 }
 
-.read-the-docs {
-  color: #888;
+.card:hover {
+  box-shadow: var(--shadow-2);
 }
+
+/* Scroll bar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-neutral-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-neutral-400);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-neutral-600);
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-text);
+}
+
+::-moz-selection {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-text);
+}
+
