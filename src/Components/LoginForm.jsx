@@ -166,18 +166,21 @@ function LoginForm({ onLogin, error }) {
         <form style={formStyle} onSubmit={handleSubmit}>
           <Input
             type="email"
-            placeholder="Correo electrónico"
+            placeholder="Ej: jazminrogel@utez.edu.mx"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={isLocked || isLoading}
           />
 
           <Input
-            type={showPassword ? 'text' : 'password'}
+            type="password"
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLocked || isLoading}
+            showPasswordToggle={true}
+            showPassword={showPassword}
+            onPasswordToggle={() => setShowPassword(!showPassword)}
           />
 
           <Button

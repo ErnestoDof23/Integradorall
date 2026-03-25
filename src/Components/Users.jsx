@@ -100,59 +100,71 @@ function Users({ currentUser }) {
     }
   };
 
-  const toggleAdmin = (id) => {
+  const toggleAdmin = async (id) => {
     if (!currentUser || currentUser.role !== 'Administrador') {
-      showAlert(
-        'Acceso denegado',
-        'No tienes permisos para realizar esta acción.',
-        'error'
-      );
+      Swal.fire({
+        title: 'Acceso denegado',
+        text: 'No tienes permisos para realizar esta acción.',
+        icon: 'error',
+        confirmButtonColor: theme.primary.main,
+      });
       return;
     }
 
-    const master = JSON.parse(localStorage.getItem('usersData') || JSON.stringify(usersData));
-    const target = master.find((m) => m.id === id);
+    const target = users.find((u) => u.id === id || u.idUsuario === id);
 
     if (!target) {
-      showAlert(
-        'Error',
-        'El usuario no existe en el sistema.',
-        'error'
-      );
+      Swal.fire({
+        title: 'Error',
+        text: 'El usuario no existe en el sistema.',
+        icon: 'error',
+        confirmButtonColor: theme.primary.main,
+      });
       return;
     }
 
-    const adminCount = master.filter((m) => m.role === 'Administrador').length;
-    if (target.role === 'Administrador' && adminCount <= 1) {
-      showAlert(
-        'Operación no permitida',
-        'No se puede quitar permisos de administrador al último administrador del sistema.',
-        'warning'
-      );
+    const adminCount = users.filter((u) => u.rol?.nombre === 'Administrador' || u.rol === 'Administrador').length;
+    if ((target.rol?.nombre === 'Administrador' || target.rol === 'Administrador') && adminCount <= 1) {
+      Swal.fire({
+        title: 'Operación no permitida',
+        text: 'No se puede quitar permisos de administrador al último administrador del sistema.',
+        icon: 'warning',
+        confirmButtonColor: theme.primary.main,
+      });
       return;
     }
 
-    setUsers((u) =>
-      u.map((x) =>
-        x.id === id
-          ? { ...x, role: x.role === 'Administrador' ? 'Usuario' : 'Administrador' }
-          : x
-      )
-    );
+    try {
+      // Cambiar el rol del usuario
+      const newRol = target.rol?.nombre === 'Administrador' || target.rol === 'Administrador' ? 2 : 1; // 1=Admin, 2=User (ajusta según tu BD)
+      const updateData = {
+        ...target,
+        rol: { ...target.rol, idRol: newRol }
+      };
+      
+      await apiService.actualizarUsuario(target.idUsuario || target.id, updateData);
+      
+      // Recargar usuarios del backend
+      const data = await apiService.getUsuarios();
+      const usersArray = Array.isArray(data) ? data : data.data || [];
+      setUsers(usersArray);
 
-    const updatedMaster = master.map((m) =>
-      m.id === id
-        ? { ...m, role: m.role === 'Administrador' ? 'Usuario' : 'Administrador' }
-        : m
-    );
-    localStorage.setItem('usersData', JSON.stringify(updatedMaster));
-
-    const newTarget = updatedMaster.find((m) => m.id === id);
-    showAlert(
-      'Rol actualizado',
-      `${newTarget.fullName} es ahora ${newTarget.role === 'Administrador' ? 'Administrador' : 'Usuario'}.`,
-      'success'
-    );
+      Swal.fire({
+        title: 'Rol actualizado',
+        text: `${target.nombre} ha sido actualizado correctamente.`,
+        icon: 'success',
+        confirmButtonColor: theme.primary.main,
+        timer: 2500,
+      });
+    } catch (error) {
+      console.error('Error al actualizar rol:', error);
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'No se pudo actualizar el rol',
+        icon: 'error',
+        confirmButtonColor: theme.primary.main,
+      });
+    }
   };
 
   const containerStyle = {
@@ -206,13 +218,15 @@ function Users({ currentUser }) {
           <div style={gridStyle}>
             {pagedUsers.map((u) => (
               <UserCard
-                key={u.id}
-                {...u}
+                key={u.idUsuario || u.id}
+                id={u.idUsuario || u.id}
+                nombre={u.nombre}
+                correoInstitucional={u.correoInstitucional || u.email}
+                rol={u.rol?.nombre || u.role}
+                bloqueado={u.bloqueado}
                 img={userImg}
-                onToggleBlock={() => toggleBlock(u.id)}
-                onToggleAdmin={() => toggleAdmin(u.id)}
-                disableAdmin={u.id === 6}
-                disableBlock={u.id === 6}
+                onToggleBlock={() => toggleBlock(u.idUsuario || u.id)}
+                onToggleAdmin={() => toggleAdmin(u.idUsuario || u.id)}
               />
             ))}
           </div>

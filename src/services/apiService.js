@@ -3,10 +3,9 @@ const getAPIBaseURL = () => {
   const host = window.location.hostname;
   const port = 8080;
   
-  // Si es localhost o 127.0.0.1, usar localhost
-  // Si es una IP, usar esa IP
-  // Si es un dominio, usar ese dominio
-  const apiUrl = `http://${host}:${port}/api`;
+  // Usar localhost explícitamente para desarrollo local
+  // En producción, usar el host actual
+  const apiUrl = `http://localhost:${port}/api`;
   return apiUrl;
 };
 

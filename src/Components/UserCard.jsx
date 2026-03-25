@@ -9,27 +9,35 @@ import { IconLock, IconUnlock, IconUserCheck, IconUser } from './Icons';
  * UserCard - Tarjeta para mostrar información de un usuario
  * Props:
  * - id: ID del usuario
- * - name: nombre completo
- * - role: 'Usuario' | 'Administrador'
- * - blocked: boolean
+ * - nombre: nombre completo
+ * - rol: 'Usuario' | 'Administrador' (puede ser string o objeto con nombre)
+ * - correoInstitucional: email del usuario
+ * - bloqueado: boolean
  * - img: URL de la imagen del usuario
  * - onToggleBlock: callback para bloquear/desbloquear
  * - onToggleAdmin: callback para cambiar rol
- * - disableBlock: boolean para deshabilitar botón de bloqueo
- * - disableAdmin: boolean para deshabilitar botón de admin
  */
 function UserCard({
   id,
+  nombre,
   name,
+  rol,
   role,
+  correoInstitucional,
+  email,
+  bloqueado,
   blocked,
   onToggleBlock,
   onToggleAdmin,
   img,
-  disableBlock = false,
-  disableAdmin = false,
 }) {
   const [isHovered, setIsHovered] = React.useState(false);
+
+  // Mapear campos del backend al formato de componente
+  const displayName = nombre || name || 'Sin nombre';
+  const displayRol = (typeof rol === 'object' ? rol?.nombre : rol) || role || 'Usuario';
+  const displayEmail = correoInstitucional || email || '';
+  const displayBlocked = bloqueado || blocked || false;
 
   const cardContainerStyle = {
     display: 'flex',
@@ -89,8 +97,8 @@ function UserCard({
     marginTop: theme.spacing[3],
   };
 
-  const statusColor = blocked ? 'error' : 'success';
-  const statusLabel = blocked ? 'Bloqueado' : 'Activo';
+  const statusColor = displayBlocked ? 'error' : 'success';
+  const statusLabel = displayBlocked ? 'Bloqueado' : 'Activo';
 
   return (
     <Card
@@ -102,18 +110,23 @@ function UserCard({
       <div style={idStyle}>ID: {id}</div>
       
       {img ? (
-        <img src={img} alt={name} style={avatarStyle} />
+        <img src={img} alt={displayName} style={avatarStyle} />
       ) : (
         <div style={avatarStyle}>
           <IconUser size={40} color={theme.primary.main} />
         </div>
       )}
       
-      <div style={nameStyle}>{name}</div>
+      <div style={nameStyle}>{displayName}</div>
+
+      <div style={infoRowStyle}>
+        <span style={labelStyle}>Email:</span>
+        <span style={{ ...labelStyle, color: theme.neutral[900], fontWeight: 500, fontSize: '12px' }}>{displayEmail}</span>
+      </div>
 
       <div style={infoRowStyle}>
         <span style={labelStyle}>Rol:</span>
-        <span style={{ ...labelStyle, color: theme.neutral[900], fontWeight: 500 }}>{role}</span>
+        <span style={{ ...labelStyle, color: theme.neutral[900], fontWeight: 500 }}>{displayRol}</span>
       </div>
 
       <div style={infoRowStyle}>
@@ -123,17 +136,16 @@ function UserCard({
 
       <div style={buttonsContainerStyle}>
         <Button
-          text={blocked ? 'Desbloquear' : 'Bloquear'}
+          text={displayBlocked ? 'Desbloquear' : 'Bloquear'}
           action={onToggleBlock}
-          color={blocked ? 'success' : 'error'}
+          color={displayBlocked ? 'success' : 'error'}
           variant="contained"
           size="small"
-          disabled={disableBlock}
           fullWidth
-          icon={blocked ? <IconUnlock size={16} color="white" /> : <IconLock size={16} color="white" />}
+          icon={displayBlocked ? <IconUnlock size={16} color="white" /> : <IconLock size={16} color="white" />}
         />
         <Button
-          text={role === 'Administrador' ? 'Quitar Admin' : 'Admin'}
+          text={displayRol === 'Administrador' ? 'Quitar Admin' : 'Admin'}
           action={onToggleAdmin}
           color="#2196F3"
           variant="contained"
