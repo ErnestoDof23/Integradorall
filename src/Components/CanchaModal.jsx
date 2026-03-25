@@ -50,6 +50,18 @@ function CanchaModal({ isOpen, onClose, onSave, cancha }) {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validar que el archivo sea jpg, jpeg o png
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Solo se permiten archivos JPG, JPEG o PNG',
+          icon: 'error',
+          confirmButtonColor: theme.primary.main,
+        });
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData({
@@ -285,7 +297,7 @@ function CanchaModal({ isOpen, onClose, onSave, cancha }) {
                 📷 Seleccionar Foto
                 <input
                   type="file"
-                  accept="image/*"
+                  accept=".jpg,.jpeg,.png"
                   onChange={handleImageChange}
                   style={{ display: 'none' }}
                 />

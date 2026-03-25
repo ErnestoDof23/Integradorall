@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import UserCard from './UserCard';
 import Button from './Button';
 import { showAlert } from './Alert';
 import userImg from '../assets/user.png';
-import usersData from '../data/usersData';
 import { theme } from '../theme';
+import Swal from 'sweetalert2';
+import apiService from '../services/apiService';
 
 /**
  * Users - Componente para gestionar y mostrar usuarios
@@ -12,11 +13,8 @@ import { theme } from '../theme';
  * - currentUser: usuario actual
  */
 function Users({ currentUser }) {
-  const [users, setUsers] = useState(() => {
-    const master = JSON.parse(localStorage.getItem('usersData') || JSON.stringify(usersData));
-    const list = master.map((u) => ({ id: u.id, name: u.fullName, role: u.role, blocked: u.blocked }));
-    return [...list].sort((a, b) => a.name.localeCompare(b.name));
-  });
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
   const perPage = 6;
@@ -27,55 +25,78 @@ function Users({ currentUser }) {
     return users.slice(start, start + perPage);
   }, [users, page]);
 
-  const toggleBlock = (id) => {
+  // Cargar usuarios del backend
+  useEffect(() => {
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        const data = await apiService.getUsuarios();
+        const usersArray = Array.isArray(data) ? data : data.data || [];
+        setUsers(usersArray);
+      } catch (error) {
+        console.error('Error al cargar usuarios:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar los usuarios',
+          icon: 'error',
+          confirmButtonColor: theme.primary.main,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, []);
+
+  const toggleBlock = async (id) => {
     if (!currentUser || currentUser.role !== 'Administrador') {
-      showAlert(
-        'Acceso denegado',
-        'No tienes permisos para realizar esta acción.',
-        'error'
-      );
+      Swal.fire({
+        title: 'Acceso denegado',
+        text: 'No tienes permisos para realizar esta acción.',
+        icon: 'error',
+        confirmButtonColor: theme.primary.main,
+      });
       return;
     }
 
-    const master = JSON.parse(localStorage.getItem('usersData') || JSON.stringify(usersData));
-    const target = master.find((m) => m.id === id);
+    const target = users.find((u) => u.id === id);
     
     if (!target) {
-      showAlert(
-        'Error',
-        'El usuario no existe en el sistema.',
-        'error'
-      );
+      Swal.fire({
+        title: 'Error',
+        text: 'El usuario no existe en el sistema.',
+        icon: 'error',
+        confirmButtonColor: theme.primary.main,
+      });
       return;
     }
 
-    const adminCount = master.filter((m) => m.role === 'Administrador').length;
-    if (target.role === 'Administrador' && adminCount <= 1) {
-      showAlert(
-        'Operación no permitida',
-        'No se puede bloquear el último administrador del sistema.',
-        'warning'
-      );
-      return;
-    }
+    try {
+      // Actualizar el usuario en el backend
+      const newState = !target.bloqueado; // O el campo correspondiente en el backend
+      await apiService.actualizarUsuario(id, { ...target, bloqueado: newState });
+      
+      // Recargar usuarios del backend
+      const data = await apiService.getUsuarios();
+      const usersArray = Array.isArray(data) ? data : data.data || [];
+      setUsers(usersArray);
 
-    setUsers((u) => u.map((x) => (x.id === id ? { ...x, blocked: !x.blocked } : x)));
-    const updatedMaster = master.map((m) => (m.id === id ? { ...m, blocked: !m.blocked } : m));
-    localStorage.setItem('usersData', JSON.stringify(updatedMaster));
-
-    const newTarget = updatedMaster.find((m) => m.id === id);
-    if (newTarget.blocked) {
-      showAlert(
-        'Cuenta bloqueada',
-        `La cuenta de ${newTarget.fullName} ha sido bloqueada correctamente.`,
-        'success'
-      );
-    } else {
-      showAlert(
-        'Cuenta desbloqueada',
-        `La cuenta de ${newTarget.fullName} ha sido desbloqueada correctamente.`,
-        'success'
-      );
+      Swal.fire({
+        title: newState ? 'Bloqueado' : 'Desbloqueado',
+        text: `El usuario ha sido ${newState ? 'bloqueado' : 'desbloqueado'} correctamente.`,
+        icon: 'success',
+        confirmButtonColor: theme.primary.main,
+        timer: 2500,
+      });
+    } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'No se pudo actualizar el usuario',
+        icon: 'error',
+        confirmButtonColor: theme.primary.main,
+      });
     }
   };
 
@@ -176,32 +197,40 @@ function Users({ currentUser }) {
     <div style={containerStyle}>
       <h2 style={titleStyle}>Gestión de Usuarios</h2>
 
-      <div style={gridStyle}>
-        {pagedUsers.map((u) => (
-          <UserCard
-            key={u.id}
-            {...u}
-            img={userImg}
-            onToggleBlock={() => toggleBlock(u.id)}
-            onToggleAdmin={() => toggleAdmin(u.id)}
-            disableAdmin={u.id === 6}
-            disableBlock={u.id === 6}
-          />
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <div style={paginationContainerStyle}>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              onClick={() => setPage(i + 1)}
-              style={paginationButtonStyle(page === i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '40px', color: theme.neutral[600] }}>
+          <p>Cargando usuarios...</p>
         </div>
+      ) : (
+        <>
+          <div style={gridStyle}>
+            {pagedUsers.map((u) => (
+              <UserCard
+                key={u.id}
+                {...u}
+                img={userImg}
+                onToggleBlock={() => toggleBlock(u.id)}
+                onToggleAdmin={() => toggleAdmin(u.id)}
+                disableAdmin={u.id === 6}
+                disableBlock={u.id === 6}
+              />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <div style={paginationContainerStyle}>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPage(i + 1)}
+                  style={paginationButtonStyle(page === i + 1)}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

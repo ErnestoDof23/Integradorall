@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import Button from './Button';
 import Input from './Input';
 import Card from './Card';
-import { showAlert } from './Alert';
-import usersData from '../data/usersData';
 import { theme } from '../theme';
+import Swal from 'sweetalert2';
+import authService from '../services/authService';
 
 /**
  * LoginForm - Formulario de login con Material Design
@@ -33,104 +33,74 @@ function LoginForm({ onLogin, error }) {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (lockedUntil && Date.now() < lockedUntil) {
-      showAlert(
-        'Cuenta bloqueada',
-        `Por favor espera ${remaining} segundos para volver a intentar.`,
-        'warning'
-      );
+      Swal.fire({
+        title: 'Cuenta bloqueada',
+        text: `Por favor espera ${remaining} segundos para volver a intentar.`,
+        icon: 'warning',
+        confirmButtonColor: theme.primary.main,
+      });
       return;
     }
 
     if (username.trim() === '' || password.trim() === '') {
-      showAlert(
-        'Campos vacíos',
-        'Por favor rellena el correo electrónico y la contraseña.',
-        'warning'
-      );
+      Swal.fire({
+        title: 'Campos vacíos',
+        text: 'Por favor rellena el correo electrónico y la contraseña.',
+        icon: 'warning',
+        confirmButtonColor: theme.primary.main,
+      });
       return;
     }
 
     setIsLoading(true);
 
-    // Simulamos un pequeño delay para mejor UX
-    setTimeout(() => {
-      const master = JSON.parse(localStorage.getItem('usersData') || JSON.stringify(usersData));
-      const found = master.find((u) => u.email.toLowerCase() === username.trim().toLowerCase());
-
-      if (!found) {
-        setIsLoading(false);
-        showAlert(
-          'Usuario no encontrado',
-          'El correo electrónico ingresado no existe en el sistema.',
-          'error'
-        );
-        return;
-      }
-
-      if (found.blocked) {
-        setIsLoading(false);
-        showAlert(
-          'Cuenta bloqueada',
-          'Esta cuenta ha sido bloqueada por un administrador.',
-          'error'
-        );
-        return;
-      }
-
-      if (found.password !== password) {
-        setIsLoading(false);
-        const newAttempts = attempts + 1;
-        setAttempts(newAttempts);
-
-        if (newAttempts >= 3) {
-          const until = Date.now() + 60_000; // 1 minuto
-          setLockedUntil(until);
-          setRemaining(60);
-          localStorage.setItem('loginLockoutUntil', until.toString());
-          showAlert(
-            'Demasiados intentos',
-            'Has superado el número de intentos permitidos. Tu cuenta ha sido bloqueada por 1 minuto.',
-            'error'
-          );
-        } else {
-          const remaining = 3 - newAttempts;
-          showAlert(
-            'Contraseña incorrecta',
-            `Contraseña incorrecta. Tienes ${remaining} intento${remaining === 1 ? '' : 's'} restante${remaining === 1 ? '' : 's'}.`,
-            'error'
-          );
-        }
-        return;
-      }
-
-      if (found.role !== 'Administrador') {
-        setIsLoading(false);
-        showAlert(
-          'Acceso denegado',
-          'Solo los administradores pueden acceder a esta plataforma. Por favor contacta al administrador.',
-          'error'
-        );
-        return;
-      }
-
+    try {
+      // Intentar login con el backend
+      const response = await authService.login(username.trim(), password);
+      
       // Login exitoso
       const user = {
-        id: found.id,
-        email: found.email,
-        fullName: found.fullName,
-        role: found.role,
-        blocked: found.blocked,
+        id: response.usuario?.id || response.id,
+        email: response.usuario?.email || response.email || username,
+        fullName: response.usuario?.nombre || response.nombre || 'Usuario',
+        role: response.usuario?.rol || response.rol || 'Usuario',
       };
+      
       onLogin(user);
       setAttempts(0);
       setUsername('');
       setPassword('');
       setIsLoading(false);
-    }, 300);
+    } catch (error) {
+      setIsLoading(false);
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
+
+      if (newAttempts >= 3) {
+        const until = Date.now() + 60_000; // 1 minuto
+        setLockedUntil(until);
+        setRemaining(60);
+        localStorage.setItem('loginLockoutUntil', until.toString());
+        Swal.fire({
+          title: 'Demasiados intentos',
+          text: 'Has superado el número de intentos permitidos. Tu cuenta ha sido bloqueada por 1 minuto.',
+          icon: 'error',
+          confirmButtonColor: theme.primary.main,
+        });
+      } else {
+        const remaining = 3 - newAttempts;
+        Swal.fire({
+          title: 'Error de login',
+          text: `${error.message}. Tienes ${remaining} intento${remaining === 1 ? '' : 's'} restante${remaining === 1 ? '' : 's'}.`,
+          icon: 'error',
+          confirmButtonColor: theme.primary.main,
+        });
+      }
+    }
   };
 
   // Update remaining time every second when locked
@@ -193,80 +163,50 @@ function LoginForm({ onLogin, error }) {
         <div style={titleStyle}>Administrador</div>
         <div style={subtitleStyle}>Inicia sesión para continuar</div>
 
-        <form onSubmit={handleSubmit} style={formStyle}>
+        <form style={formStyle} onSubmit={handleSubmit}>
           <Input
-            label="Correo Electrónico"
             type="email"
-            placeholder="admin@example.com"
+            placeholder="Correo electrónico"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={isLocked || isLoading}
-            required
-            fullWidth
           />
 
           <Input
-            label="Contraseña"
-            type="password"
-            placeholder="••••••••"
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLocked || isLoading}
-            showPassword={showPassword}
-            onPasswordToggle={() => setShowPassword(!showPassword)}
-            showPasswordToggle
-            required
-            fullWidth
           />
-
-          {isLocked && (
-            <div
-              style={{
-                backgroundColor: theme.warning.background,
-                border: `2px solid ${theme.warning.main}`,
-                borderRadius: theme.borderRadius.lg,
-                padding: theme.spacing[3],
-                color: theme.warning.main,
-                textAlign: 'center',
-                fontFamily: theme.typography.fontFamily,
-                fontSize: '0.875rem',
-                fontWeight: 500,
-              }}
-            >
-              Cuenta bloqueada. Espera {remaining}s para reintentar.
-            </div>
-          )}
 
           <Button
-            text={isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
-            action={handleSubmit}
             type="submit"
-            color="primary"
             variant="contained"
+            fullWidth
             size="large"
             disabled={isLocked || isLoading}
-            fullWidth
-          />
+          >
+            {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+          </Button>
         </form>
-      </Card>
 
-      {error && (
-        <div
-          style={{
-            marginTop: theme.spacing[4],
-            padding: theme.spacing[3],
-            backgroundColor: theme.error.background,
-            border: `2px solid ${theme.error.main}`,
-            borderRadius: theme.borderRadius.lg,
-            color: theme.error.main,
-            textAlign: 'center',
-            fontFamily: theme.typography.fontFamily,
-            fontSize: '0.875rem',
-          }}
-        >
-          {error}
-        </div>
-      )}
+        {error && (
+          <div
+            style={{
+              marginTop: theme.spacing[3],
+              padding: theme.spacing[3],
+              backgroundColor: theme.error.light,
+              color: theme.error.dark,
+              borderRadius: theme.borderRadius.md,
+              fontFamily: theme.typography.fontFamily,
+              ...theme.typography.body2,
+            }}
+          >
+            {error}
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

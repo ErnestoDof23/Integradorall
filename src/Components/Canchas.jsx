@@ -1,21 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CanchaCard from './CanchaCard';
 import CanchaModal from './CanchaModal';
 import Button from './Button';
 import { theme } from '../theme';
 import { IconPlus } from './Icons';
-import canchasData from '../data/canchasData';
 import Swal from 'sweetalert2';
+import apiService from '../services/apiService';
 
 /**
  * Canchas - Componente para mostrar y gestionar canchas
  */
 function Canchas() {
-  const [canchas, setCanchas] = useState(canchasData);
+  const [canchas, setCanchas] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCancha, setEditingCancha] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+
+  // Cargar canchas del backend
+  useEffect(() => {
+    const loadCanchas = async () => {
+      try {
+        setLoading(true);
+        const data = await apiService.getInstalaciones();
+        const canchasArray = Array.isArray(data) ? data : data.data || [];
+        setCanchas(canchasArray);
+      } catch (error) {
+        console.error('Error al cargar canchas:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar las canchas',
+          icon: 'error',
+          confirmButtonColor: theme.primary.main,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCanchas();
+  }, []);
 
   // Calcular paginación
   const totalPages = Math.ceil(canchas.length / itemsPerPage);
@@ -33,23 +58,33 @@ function Canchas() {
     setEditingCancha(null);
   };
 
-  const handleAddCancha = (formData) => {
-    const newCancha = {
-      id: Math.max(...canchas.map(c => c.id), 0) + 1,
-      ...formData,
-      status: 'Disponibles',
-    };
+  const handleAddCancha = async (formData) => {
+    try {
+      const result = await apiService.crearInstalacion(formData);
+      
+      // Recargar las canchas del backend
+      const data = await apiService.getInstalaciones();
+      const canchasArray = Array.isArray(data) ? data : data.data || [];
+      setCanchas(canchasArray);
+      
+      handleCloseModal();
 
-    setCanchas([...canchas, newCancha]);
-    handleCloseModal();
-
-    Swal.fire({
-      title: '¡Éxito!',
-      text: `La cancha "${newCancha.name}" ha sido creada correctamente`,
-      icon: 'success',
-      confirmButtonColor: theme.primary.main,
-      timer: 2500,
-    });
+      Swal.fire({
+        title: '¡Éxito!',
+        text: `La cancha ha sido creada correctamente`,
+        icon: 'success',
+        confirmButtonColor: theme.primary.main,
+        timer: 2500,
+      });
+    } catch (error) {
+      console.error('Error al crear cancha:', error);
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'No se pudo crear la cancha',
+        icon: 'error',
+        confirmButtonColor: theme.primary.main,
+      });
+    }
   };
 
   const handleEditCancha = (id) => {
@@ -58,21 +93,33 @@ function Canchas() {
     setIsModalOpen(true);
   };
 
-  const handleSaveEdit = (formData) => {
-    setCanchas(canchas.map(c => 
-      c.id === editingCancha.id 
-        ? { ...c, ...formData }
-        : c
-    ));
-    handleCloseModal();
+  const handleSaveEdit = async (formData) => {
+    try {
+      await apiService.actualizarInstalacion(editingCancha.id, formData);
+      
+      // Recargar las canchas del backend
+      const data = await apiService.getInstalaciones();
+      const canchasArray = Array.isArray(data) ? data : data.data || [];
+      setCanchas(canchasArray);
+      
+      handleCloseModal();
 
-    Swal.fire({
-      title: '¡Actualizado!',
-      text: `La cancha ha sido actualizada correctamente`,
-      icon: 'success',
-      confirmButtonColor: theme.primary.main,
-      timer: 2500,
-    });
+      Swal.fire({
+        title: '¡Actualizado!',
+        text: `La cancha ha sido actualizada correctamente`,
+        icon: 'success',
+        confirmButtonColor: theme.primary.main,
+        timer: 2500,
+      });
+    } catch (error) {
+      console.error('Error al actualizar cancha:', error);
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'No se pudo actualizar la cancha',
+        icon: 'error',
+        confirmButtonColor: theme.primary.main,
+      });
+    }
   };
 
   const handleDeleteCancha = (id) => {
@@ -93,11 +140,11 @@ function Canchas() {
             margin-bottom: 16px;
           ">
             <div style="font-weight: 600; font-size: 16px; color: #000; margin-bottom: 8px;">
-              ${cancha.name}
+              ${cancha.nombre || cancha.name}
             </div>
             <div style="font-size: 14px; color: #666;">
-              <strong>Tipo:</strong> ${cancha.type || 'Cancha'}<br/>
-              <strong>Estado:</strong> ${cancha.status}
+              <strong>Descripción:</strong> ${cancha.descripcion || cancha.type || 'Cancha'}<br/>
+              <strong>Estado:</strong> ${cancha.estado || cancha.status}
             </div>
           </div>
           <p style="font-size: 14px; color: #f44336; font-weight: 500;">
@@ -111,20 +158,36 @@ function Canchas() {
       cancelButtonColor: theme.neutral[400],
       confirmButtonText: 'Sí, Eliminar',
       cancelButtonText: 'Cancelar',
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        setCanchas(canchas.filter(c => c.id !== id));
-        if (currentPage > Math.ceil((canchas.length - 1) / itemsPerPage)) {
-          setCurrentPage(Math.max(1, currentPage - 1));
-        }
+        try {
+          await apiService.eliminarInstalacion(id);
+          
+          // Recargar las canchas del backend
+          const data = await apiService.getInstalaciones();
+          const canchasArray = Array.isArray(data) ? data : data.data || [];
+          setCanchas(canchasArray);
+          
+          if (currentPage > Math.ceil((canchasArray.length) / itemsPerPage)) {
+            setCurrentPage(Math.max(1, currentPage - 1));
+          }
 
-        Swal.fire({
-          title: '¡Eliminado!',
-          text: `"${cancha.name}" ha sido eliminada correctamente`,
-          icon: 'success',
-          confirmButtonColor: theme.primary.main,
-          timer: 2500,
-        });
+          Swal.fire({
+            title: '¡Eliminado!',
+            text: `La cancha ha sido eliminada correctamente`,
+            icon: 'success',
+            confirmButtonColor: theme.primary.main,
+            timer: 2500,
+          });
+        } catch (error) {
+          console.error('Error al eliminar cancha:', error);
+          Swal.fire({
+            title: 'Error',
+            text: error.message || 'No se pudo eliminar la cancha',
+            icon: 'error',
+            confirmButtonColor: theme.primary.main,
+          });
+        }
       }
     });
   };
@@ -190,30 +253,38 @@ function Canchas() {
     <div style={containerStyle}>
       <h2 style={titleStyle}>Canchas Disponibles</h2>
       
-      <div style={gridStyle}>
-        {currentCanchas.map((c) => (
-          <CanchaCard 
-            key={c.id} 
-            {...c} 
-            onEdit={handleEditCancha}
-            onDelete={handleDeleteCancha}
-          />
-        ))}
-      </div>
-
-      {/* Paginación */}
-      {totalPages > 1 && (
-        <div style={paginationStyle}>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              style={pageButtonStyle(page === currentPage)}
-              onClick={() => setCurrentPage(page)}
-            >
-              {page}
-            </button>
-          ))}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '40px', color: theme.neutral[600] }}>
+          <p>Cargando canchas...</p>
         </div>
+      ) : (
+        <>
+          <div style={gridStyle}>
+            {currentCanchas.map((c) => (
+              <CanchaCard 
+                key={c.id} 
+                {...c} 
+                onEdit={handleEditCancha}
+                onDelete={handleDeleteCancha}
+              />
+            ))}
+          </div>
+
+          {/* Paginación */}
+          {totalPages > 1 && (
+            <div style={paginationStyle}>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  style={pageButtonStyle(page === currentPage)}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
       {/* Modal para agregar/editar */}

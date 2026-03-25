@@ -9,16 +9,22 @@ import { IconEdit, IconTrash } from './Icons';
  * CanchaCard - Tarjeta para mostrar información de una cancha
  * Props:
  * - id: ID de la cancha
- * - name: nombre de la cancha
- * - img: URL de la imagen
- * - type: tipo de cancha ('Cancha' o 'Auditorio')
- * - status: 'Reservadas' | 'Disponibles'
+ * - nombre/name: nombre de la cancha
+ * - foto/img: URL de la imagen
+ * - descripcion/type: tipo de cancha
+ * - estado/status: 'Reservadas' | 'Disponibles'
  * - reserved: horario de reserva (opcional)
  * - onEdit: función para editar
  * - onDelete: función para eliminar
  */
-function CanchaCard({ id, name, img, type, status, reserved, onEdit, onDelete }) {
+function CanchaCard({ id, nombre, name, foto, img, descripcion, type, estado, status, reserved, onEdit, onDelete }) {
   const [isHovered, setIsHovered] = React.useState(false);
+
+  // Mapear campos del backend al formato de componente
+  const displayName = nombre || name || 'Sin nombre';
+  const displayImg = foto || img || '';
+  const displayType = descripcion || type || 'Cancha';
+  const displayStatus = estado || status || 'Disponibles';
 
   const cardContainerStyle = {
     display: 'flex',
@@ -29,7 +35,7 @@ function CanchaCard({ id, name, img, type, status, reserved, onEdit, onDelete })
     transform: isHovered ? 'translateY(-8px)' : 'translateY(0)',
   };
 
-  const imageStyle = {
+    imageStyle = {
     width: '100%',
     height: '200px',
     objectFit: 'cover',
@@ -50,7 +56,7 @@ function CanchaCard({ id, name, img, type, status, reserved, onEdit, onDelete })
     color: theme.neutral[900],
   };
 
-  const statusBadgeColor = status === 'Reservadas' ? 'error' : 'success';
+  const statusBadgeColor = displayStatus === 'Reservadas' ? 'error' : 'success';
 
   const infoStyle = {
     fontFamily: theme.typography.fontFamily,
@@ -73,18 +79,18 @@ function CanchaCard({ id, name, img, type, status, reserved, onEdit, onDelete })
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <img src={img} alt={name} style={imageStyle} />
+      <img src={displayImg} alt={displayName} style={imageStyle} />
       <div style={contentStyle}>
-        <div style={titleStyle}>{name}</div>
+        <div style={titleStyle}>{displayName}</div>
         
         <div style={{ display: 'flex', gap: theme.spacing[2], alignItems: 'center' }}>
           <span style={infoStyle}>Tipo:</span>
-          <Badge label={type} color="secondary" size="small" />
+          <Badge label={displayType} color="secondary" size="small" />
         </div>
 
         <div style={{ display: 'flex', gap: theme.spacing[2], alignItems: 'center' }}>
           <span style={infoStyle}>Estado:</span>
-          <Badge label={status} color={statusBadgeColor} size="small" />
+          <Badge label={displayStatus} color={statusBadgeColor} size="small" />
         </div>
 
         {reserved && (
