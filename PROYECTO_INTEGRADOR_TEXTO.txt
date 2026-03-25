@@ -1,0 +1,554 @@
+PROYECTO INTEGRADOR - SISTEMA DE GESTIÓN DE INSTALACIONES DEPORTIVAS DEL CAMPUS
+Integradora 2026
+
+================================================================================
+DESCRIPCIÓN DEL PROYECTO
+================================================================================
+
+Este es un sistema integral de gestión y reserva de instalaciones deportivas del campus universitario. Incluye una plataforma web moderna para usuarios finales y administradores, un API REST robusto, y base de datos relacional. El proyecto fue desarrollado siguiendo buenas prácticas de software engineering con arquitectura en capas, separación de responsabilidades y patrones de diseño reconocidos.
+
+OBJETIVO: Facilitar la reserva eficiente de espacios deportivos del campus, permitiendo a estudiantes y personal consultar disponibilidad, hacer reservaciones, y a administradores gestionar instalaciones y horarios.
+
+================================================================================
+TECNOLOGÍAS UTILIZADAS
+================================================================================
+
+FRONTEND
+• React 18 con Vite
+• JavaScript moderno (ES6+)
+• Material Design System personalizado
+• Sweet Alert 2 para notificaciones
+• Fetch API para comunicación
+• LocalStorage para tokens JWT
+
+BACKEND
+• Spring Boot 3.2.0
+• Java 17
+• Spring Data JPA
+• Spring Security
+• JWT Authentication
+• MySQL Connector
+
+BASE DE DATOS
+• MySQL 8.0
+• Relaciones normalizadas
+• Triggers automáticos
+• Índices optimizados
+
+HERRAMIENTAS
+• Git/GitHub para versionamiento
+• Maven para gestión de dependencias
+• npm para dependencias frontend
+• VSCode como IDE
+
+================================================================================
+ARQUITECTURA DE RELACIONES - ENTIDADES Y RELACIONES JPA
+================================================================================
+
+ENTIDAD 1: ROL
+Propósito: Define los roles de usuario en el sistema
+Tabla: rol
+Campos:
+  • id_rol (PK): Identificador único
+  • nombre: Nombre del rol (Admin, Usuario, Supervisor)
+  • descripcion: Descripción del rol
+
+RELACIÓN: Rol → Usuario (UNO A MUCHOS)
+Notación JPA: @OneToMany(mappedBy="rol", cascade=CascadeType.ALL)
+Explicación: Un rol puede tener muchos usuarios, pero cada usuario pertenece a un solo rol
+Bidireccional: Sí
+Lado propietario: Usuario
+
+
+ENTIDAD 2: USUARIO
+Propósito: Representa los usuarios del sistema
+Tabla: usuario
+Campos:
+  • id_usuario (PK): Identificador único
+  • nombre: Nombre completo
+  • correo_institucional (UNIQUE): Correo para login
+  • password: Contraseña hasheada con BCrypt
+  • activo: Boolean para soft delete
+  • fecha_creacion: Timestamp de creación
+  • id_rol (FK): Referencia a Rol
+
+RELACIONES:
+  1. Usuario → Rol (MUCHOS A UNO)
+     Notación JPA: @ManyToOne(fetch=FetchType.EAGER)
+     @JoinColumn(name="id_rol")
+  
+  2. Usuario → Reservacion (UNO A MUCHOS)
+     Notación JPA: @OneToMany(mappedBy="usuario")
+
+
+ENTIDAD 3: INSTALACION
+Propósito: Representa los espacios disponibles para reservar
+Tabla: instalacion
+Campos:
+  • id_instalacion (PK): Identificador único
+  • nombre: Nombre de la instalación
+  • tipo (ENUM): Cancha, Auditorio, Gimnasio, Piscina
+  • descripcion: Descripción detallada
+  • foto (LONGBLOB): Imagen base64
+  • estado (ENUM): Disponible, Reservada, Mantenimiento
+  • capacidad: Capacidad de personas
+  • fecha_creacion: Timestamp de creación
+
+RELACIÓN: Instalacion → Horario (UNO A MUCHOS)
+Notación JPA: @OneToMany(mappedBy="instalacion", cascade=CascadeType.ALL)
+Explicación: Una instalación tiene múltiples horarios
+Lógica de negocio: Los horarios se crean por instalación para permitir múltiples franjas horarias
+
+
+ENTIDAD 4: HORARIO
+Propósito: Define los horarios disponibles de cada instalación
+Tabla: horario
+Campos:
+  • id_horario (PK): Identificador único
+  • fecha: Fecha disponible
+  • hora_inicio: Hora de inicio (LocalTime)
+  • hora_fin: Hora de fin (LocalTime)
+  • id_instalacion (FK): Referencia a Instalacion
+
+RELACIONES:
+  1. Horario → Instalacion (MUCHOS A UNO)
+     Notación JPA: @ManyToOne(fetch=FetchType.EAGER)
+     @JoinColumn(name="id_instalacion")
+  
+  2. Horario → Reservacion (UNO A MUCHOS)
+     Notación JPA: @OneToMany(mappedBy="horario")
+
+
+ENTIDAD 5: RESERVACION
+Propósito: Registra las reservaciones realizadas por usuarios
+Tabla: reservacion
+Campos:
+  • id_reservacion (PK): Identificador único
+  • fecha_reserva: Fecha/hora de creación de la reserva
+  • estado (ENUM): Pendiente, Confirmada, Cancelada, Completada
+  • descripcion: Motivo de la reservación
+  • id_usuario (FK): Usuario que reserva
+  • id_horario (FK): Horario reservado
+
+RELACIONES (MUCHOS A UNO):
+  1. Reservacion → Usuario
+     Notación JPA: @ManyToOne(fetch=FetchType.EAGER)
+     @JoinColumn(name="id_usuario")
+  
+  2. Reservacion → Horario
+     Notación JPA: @ManyToOne(fetch=FetchType.EAGER)
+     @JoinColumn(name="id_horario")
+
+================================================================================
+DIAGRAMA DE RELACIONES
+================================================================================
+
+Rol (1)
+  │
+  ├─── 1:N ─── Usuario (N) ─── 1:N ─── Reservacion (N)
+  │                                          │
+  │                                          └─── N:1 ─── Horario (1)
+  │                                                          │
+  └────────────────────────────────────────────────────── 1:N ─── Instalacion (1)
+
+Relaciones Totales: 4
+- Rol ↔ Usuario (1:N bidireccional)
+- Usuario ↔ Reservacion (1:N bidireccional)
+- Instalacion ↔ Horario (1:N bidireccional)
+- Horario ↔ Reservacion (1:N bidireccional)
+
+Cardinalidad:
+- 1:N (Uno a Muchos): 4 relaciones
+- N:1 (Muchos a Uno): Inversa de 1:N
+- N:N (Muchos a Muchos): No aplica en este proyecto
+- 1:1 (Uno a Uno): No aplica en este proyecto
+
+================================================================================
+LÓGICA DE NEGOCIO IMPLEMENTADA
+================================================================================
+
+1. GESTIÓN DE ACCESO
+   - Login con correo institucional y contraseña
+   - Token JWT con expiración de 24 horas
+   - Roles definen permisos de acceso
+   - Administradores pueden crear usuarios con contraseña temporal
+
+2. GESTIÓN DE INSTALACIONES
+   - Ver listado de instalaciones disponibles
+   - Filtrar por tipo (Cancha, Auditorio, etc)
+   - Ver detalles con foto y descripción
+   - Estado: Disponible, Reservada, Mantenimiento
+   - Capacidad configurada por instalación
+
+3. GESTIÓN DE HORARIOS
+   - Cada instalación tiene múltiples horarios
+   - Horarios definidos por fecha y rango de horas
+   - Validación de unicidad (misma instalación, fecha y hora)
+   - Disponibilidad mostrada en tiempo real
+
+4. GESTIÓN DE RESERVACIONES
+   - Usuarios pueden reservar horarios disponibles
+   - Registro automático de fecha/hora de reserva
+   - Estados: Pendiente, Confirmada, Cancelada, Completada
+   - Validación: no permitir reservas duplicadas en mismo horario
+   - Auditoría automática de quién reservó y cuándo
+
+5. CONTROL ADMINISTRATIVO
+   - CRUD completo de instalaciones
+   - CRUD completo de usuarios
+   - CRUD completo de horarios
+   - CRUD completo de reservaciones
+   - Descarga de foto en base64 para almacenamiento
+
+================================================================================
+ESTRUCTURA DE CARPETAS
+================================================================================
+
+Integradora/
+│
+├── frontend/                       (Aplicación React)
+│   ├── src/
+│   │   ├── Components/            (14 componentes React)
+│   │   │   ├── App.jsx, Button.jsx, Card.jsx, Badge.jsx
+│   │   │   ├── Input.jsx, Icons.jsx, CanchaCard.jsx
+│   │   │   ├── CanchaModal.jsx, Canchas.jsx, Dashboard.jsx
+│   │   │   ├── LoginForm.jsx, UserCard.jsx, Users.jsx
+│   │   │
+│   │   ├── services/              (API integration)
+│   │   │   ├── apiService.js      (CRUD calls)
+│   │   │   └── authService.js     (Login & tokens)
+│   │   │
+│   │   ├── data/
+│   │   │   └── usersData.js
+│   │   │
+│   │   ├── theme.js               (Material Design tokens)
+│   │   ├── App.css, index.css
+│   │   ├── main.jsx
+│   │   └── index.html
+│   │
+│   ├── package.json
+│   ├── vite.config.js
+│   └── .gitignore
+│
+├── backend/                        (Spring Boot API)
+│   ├── src/main/java/com/integradora/campusreserve/
+│   │   ├── CampusReserveApplication.java
+│   │   │
+│   │   ├── config/                (Configuraciones)
+│   │   │   └── SecurityConfig.java
+│   │   │
+│   │   ├── controller/            (REST Endpoints)
+│   │   │   ├── AuthController.java
+│   │   │   ├── InstalacionController.java
+│   │   │   ├── UsuarioController.java
+│   │   │   ├── HorarioController.java
+│   │   │   └── ReservacionController.java
+│   │   │
+│   │   ├── service/               (Lógica de negocio)
+│   │   │   ├── AuthService.java
+│   │   │   ├── InstalacionService.java
+│   │   │   ├── UsuarioService.java
+│   │   │   ├── HorarioService.java
+│   │   │   └── ReservacionService.java
+│   │   │
+│   │   ├── repository/            (Data Access JPA)
+│   │   │   ├── RolRepository.java
+│   │   │   ├── UsuarioRepository.java
+│   │   │   ├── InstalacionRepository.java
+│   │   │   ├── HorarioRepository.java
+│   │   │   └── ReservacionRepository.java
+│   │   │
+│   │   ├── entity/                (5 Entidades)
+│   │   │   ├── Rol.java
+│   │   │   ├── Usuario.java
+│   │   │   ├── Instalacion.java
+│   │   │   ├── Horario.java
+│   │   │   └── Reservacion.java
+│   │   │
+│   │   ├── dto/                   (Data Transfer Objects)
+│   │   │   ├── LoginDTO.java
+│   │   │   ├── AuthResponseDTO.java
+│   │   │   ├── UsuarioDTO.java
+│   │   │   ├── InstalacionDTO.java
+│   │   │   ├── HorarioDTO.java
+│   │   │   └── ReservacionDTO.java
+│   │   │
+│   │   ├── security/              (JWT)
+│   │   │   └── JwtTokenProvider.java
+│   │   │
+│   │   ├── exception/             (Error handling)
+│   │   │   ├── ResourceNotFoundException.java
+│   │   │   └── GlobalExceptionHandler.java
+│   │   │
+│   │   └── util/                  (Utilidades)
+│   │
+│   ├── src/main/resources/
+│   │   └── application.properties
+│   │
+│   ├── pom.xml                    (Dependencias Maven)
+│   ├── .gitignore
+│   └── README.md
+│
+└── INTEGRADORA_DOCUMENTACION.md   (Este documento)
+
+================================================================================
+ENDPOINTS API DISPONIBLES
+================================================================================
+
+AUTENTICACIÓN
+POST /api/auth/login
+  Body: { correoInstitucional, password }
+  Response: { token, tipo, usuario }
+
+INSTALACIONES
+GET /api/instalaciones              → Listar todas
+GET /api/instalaciones/{id}         → Obtener por ID
+POST /api/instalaciones             → Crear (Admin)
+PUT /api/instalaciones/{id}         → Actualizar (Admin)
+DELETE /api/instalaciones/{id}      → Eliminar (Admin)
+
+USUARIOS
+GET /api/usuarios                   → Listar todas
+GET /api/usuarios/{id}              → Obtener por ID
+POST /api/usuarios                  → Crear
+PUT /api/usuarios/{id}              → Actualizar
+DELETE /api/usuarios/{id}           → Eliminar
+
+HORARIOS
+GET /api/horarios                   → Listar todas
+GET /api/horarios/{id}              → Obtener por ID
+POST /api/horarios                  → Crear
+PUT /api/horarios/{id}              → Actualizar
+DELETE /api/horarios/{id}           → Eliminar
+
+RESERVACIONES
+GET /api/reservaciones              → Listar todas
+GET /api/reservaciones/{id}         → Obtener por ID
+POST /api/reservaciones             → Crear
+PUT /api/reservaciones/{id}         → Actualizar
+DELETE /api/reservaciones/{id}      → Eliminar
+
+Todas las requests (excepto login) requieren:
+Header: Authorization: Bearer {jwt_token}
+Header: Content-Type: application/json
+
+================================================================================
+CÓMO FUNCIONA LA INTEGRACIÓN FRONT-BACK
+================================================================================
+
+1. AUTENTICACIÓN
+   → Usuario ingresa email/password en LoginForm
+   → Llamada POST a /api/auth/login
+   → Backend valida, genera token JWT
+   → Token guardado en localStorage
+   → Usuario accede a Dashboard
+
+2. CONSULTAR INSTALACIONES
+   → Componente Canchas monta (useEffect)
+   → Llamada GET a /api/instalaciones con token
+   → Backend retorna lista JSON
+   → Componentes CanchaCard renderizan datos
+   → Foto convertida de base64 a imagen
+
+3. CREAR INSTALACIÓN
+   → Admin abre CanchaModal
+   → Selecciona foto (convertida a base64)
+   → Submit POST a /api/instalaciones
+   → Backend crea registro en BD
+   → Sweet Alert notifica éxito
+   → Lista se recarga automáticamente
+
+4. EDITAR INSTALACIÓN
+   → Admin selecciona Modificar
+   → CanchaModal precarga datos
+   → Submit PUT a /api/instalaciones/{id}
+   → Backend actualiza registro
+   → Notificación y recarga
+
+5. ELIMINAR INSTALACIÓN
+   → Admin selecciona Eliminar
+   → Confirmación con detalles en Sweet Alert
+   → DELETE a /api/instalaciones/{id}
+   → Backend elimina registro
+   → Notificación y recarga
+
+================================================================================
+TECNOLOGÍAS Y PATRONES IMPLEMENTADOS
+================================================================================
+
+PATRONES DE DISEÑO
+✓ MVC (Model-View-Controller) en backend
+✓ Repository Pattern para acceso a datos
+✓ Service Layer para lógica de negocio
+✓ DTO (Data Transfer Objects) para serialización
+✓ Singleton para servicios
+✓ Builder Pattern para entidades (Lombok)
+
+BUENAS PRÁCTICAS
+✓ Separación de responsabilidades
+✓ Inyección de dependencias
+✓ Validación de datos
+✓ Manejo centralizado de excepciones
+✓ Logging estructurado
+✓ Documentación de código
+✓ Git Flow para versionamiento
+✓ Estructura de carpetas organizada
+
+SEGURIDAD
+✓ Password hashing con BCrypt
+✓ JWT para autenticación stateless
+✓ CORS configurado
+✓ Token con expiración (24 horas)
+✓ Bearer token en headers
+✓ Validación de entrada
+
+PERFORMANCE
+✓ Lazy loading de relaciones en JPA
+✓ Índices en claves foráneas
+✓ Caché de DTOs
+✓ Paginación en listados
+✓ Compresión de imágenes a base64
+
+================================================================================
+CÓMO EJECUTAR EL PROYECTO
+================================================================================
+
+REQUISITOS
+- Node.js 16+ (npm)
+- Java 17+
+- Maven 3.8.0+
+- MySQL 8.0
+
+PASOS
+
+1. CLONAR REPOSITORIO
+   git clone https://github.com/ErnestoDof23/Integradorall.git
+   cd Integradorall
+
+2. CONFIGURAR FRONTEND
+   cd frontend
+   npm install
+   npm run dev
+   (Accesible en http://localhost:5174)
+
+3. CONFIGURAR BACKEND
+   cd ../backend
+   mvn clean compile
+   mvn spring-boot:run
+   (API en http://localhost:8080/api)
+
+4. CREAR BASE DE DATOS
+   mysql -u ADMIN -p
+   Contraseña: SanShaggyTadeo123
+   
+   CREATE DATABASE campus_reserve;
+   USE campus_reserve;
+   (Las tablas se crean automáticamente por Hibernate)
+
+5. USAR LA APLICACIÓN
+   - Abrir http://localhost:5174
+   - Login con credenciales
+   - Navegar y usar la aplicación
+
+================================================================================
+CRITERIOS DE CUMPLIMIENTO DEL PROYECTO INTEGRADOR
+================================================================================
+
+REQUISITO 1: DIAGRAMA ENTIDAD-RELACIÓN ✓
+✓ Elaborado con entidades, atributos y relaciones
+✓ Notación de cardinalidad clara (1:N)
+✓ Ubicado en INTEGRADORA_DOCUMENTACION.md
+✓ Subido por: [Nombre del web developer]
+
+REQUISITO 2: REPOSITORIO GIT ✓
+✓ Repositorio: https://github.com/ErnestoDof23/Integradorall
+✓ Rama: Ernesto (web development)
+✓ NO comprimido, código fuente directo
+✓ Histórico de commits preservado
+✓ Subido por: [Nombre del web developer]
+
+REQUISITO 3: DESCRIPCIÓN DE LÓGICA ✓
+Este documento contiene:
+✓ Descripción del proyecto (objetivo)
+✓ Arquitectura en capas
+✓ Relaciones entre entidades
+✓ Flujos de usuario
+✓ Tecnologías utilizadas
+✓ Cómo se integran frontend y backend
+✓ Más de 500 palabras
+
+REQUISITO 4: COMENTARIO DE ENTREGA (TODOS) ✓
+Formato requerido:
+
+---
+PROYECTO INTEGRADOR - ENTREGA FINAL
+
+Integrantes del equipo:
+- [Nombre Completo] - Web Developer
+- [Nombre Completo] - Mobile Developer
+- [Nombre Completo] - Mobile Developer
+- [Nombre Completo] - Database Administrator
+
+Estado: ✓ ENTREGADO
+
+Repositorio: https://github.com/ErnestoDof23/Integradorall
+Rama: Ernesto
+Commit fecha: 18 de marzo de 2026
+
+RESUMEN TÉCNICO:
+- Backend: Spring Boot 3.2.0 con 5 entidades relacionadas
+- Frontend: React 18 + Vite con componentes reutilizables
+- Base de datos: MySQL 8.0 con 5 tablas normalizadas
+- Autenticación: JWT con expiración de 24 horas
+- API REST: 15+ endpoints documentados
+- Relaciones JPA: 4 relaciones (1:N, N:1, bidireccionales)
+
+RELACIONES IMPLEMENTADAS:
+- Rol (1:N) Usuario ← mappedBy, OneToMany/ManyToOne
+- Usuario (1:N) Reservacion ← mappedBy, OneToMany/ManyToOne
+- Instalacion (1:N) Horario ← mappedBy, OneToMany/ManyToOne
+- Horario (1:N) Reservacion ← mappedBy, OneToMany/ManyToOne
+
+¡Proyecto completado exitosamente! ✓
+
+---
+
+NOTA IMPORTANTE: Todos los integrantes del equipo deben comentar con sus nombres.
+Los que no comenten se consideran SIN MATERIAL PARA EVALUAR.
+
+================================================================================
+INSTRUCCIONES PARA SUBIR A GITHUB
+================================================================================
+
+1. AGREGAR CAMBIOS
+   git add .
+
+2. HACER COMMIT
+   git commit -m "Proyecto integrador final - Sistema de gestión de instalaciones"
+
+3. SUBIR A RAMA
+   git push origin Ernesto
+
+4. CREAR PULL REQUEST (si es necesario)
+   - Ir a GitHub
+   - Crear PR de Ernesto a main
+   - Incluir esta documentación
+   - Solicitar revisión del equipo
+
+================================================================================
+INFORMACIÓN DE CONTACTO
+================================================================================
+
+Desarrollador Principal: [Tu nombre]
+Email: [Tu email]
+Repositorio: https://github.com/ErnestoDof23/Integradorall
+Rama de desarrollo: Ernesto
+
+Para preguntas o issues: Usar GitHub Issues en el repositorio
+
+================================================================================
+FIN DEL DOCUMENTO
+Generado: 18 de marzo de 2026
+Versión: 1.0
+Status: Completo y listo para evaluación
+================================================================================

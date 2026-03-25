@@ -1,0 +1,38 @@
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+*.iml
+*.iws
+*.ipr
+
+# Node
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+
+# Build
+dist/
+build/
+*.class
+*.jar
+*.war
+target/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Misc
+.eslintcache
+.stylelintcache

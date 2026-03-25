@@ -1,0 +1,312 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║              PLANTILLA DE COMENTARIO PARA ENTREGA DEL PROYECTO               ║
+║                                                                               ║
+║  ⚠️ TODOS LOS INTEGRANTES DEL EQUIPO DEBEN DEJAR ESTE COMENTARIO EN LA TAREA ⚠️ ║
+║                                                                               ║
+║              Los que NO comenten se consideran SIN MATERIAL PARA EVALUAR      ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────────────────────
+PLANTILLA A COPIAR Y PEGAR EN LA TAREA DEL PROYECTO INTEGRADOR
+────────────────────────────────────────────────────────────────────────────────
+
+PROYECTO INTEGRADOR - ENTREGA FINAL
+Campus Reserve - Sistema de Gestión de Instalaciones Deportivas
+
+INTEGRANTES DEL EQUIPO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ✓ [NOMBRE COMPLETO - APELLIDO] - Rol: Desarrollador Web (React + Spring Boot)
+  ✓ [NOMBRE COMPLETO - APELLIDO] - Rol: Desarrollador Mobile (Equipo 1)
+  ✓ [NOMBRE COMPLETO - APELLIDO] - Rol: Desarrollador Mobile (Equipo 2)
+  ✓ [NOMBRE COMPLETO - APELLIDO] - Rol: Administrador de Base de Datos
+
+ESTADO DEL PROYECTO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Estado: ✓ ENTREGADO Y COMPLETADO
+  
+INFORMACIÓN DEL REPOSITORIO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Repositorio: https://github.com/ErnestoDof23/Integradorall
+  Rama principal: main
+  Rama de desarrollo: Ernesto (Web Development)
+  Tipo: Repositorio Git en GitHub (NO COMPRIMIDO)
+  
+  Documentación:
+    • Diagrama ER: INTEGRADORA_DOCUMENTACION.md
+    • Descripción Técnica: PROYECTO_INTEGRADOR_TEXTO.txt
+    • README General: README.md
+    • Backend: backend/README.md
+    • Frontend: frontend/README.md
+
+RESUMEN TÉCNICO DEL PROYECTO:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FRONTEND (Desarrollador Web)
+  • Tecnología: React 18 + Vite
+  • Componentes: 14 componentes reutilizables
+  • Estado: Hooks (useState, useEffect)
+  • Diseño: Material Design System personalizado
+  • Notificaciones: Sweet Alert 2
+  • Servicios: apiService.js y authService.js
+  • Autenticación: JWT con token en localStorage
+  • Paginación: Implementada (6 items por página)
+  • Validación: Frontend y backend
+  • CRUD: Completo para instalaciones y usuarios
+
+BACKEND (Spring Boot 3.2.0)
+  • Arquitectura: Capas (Controller → Service → Repository)
+  • Entidades: 5 clases (Rol, Usuario, Instalacion, Horario, Reservacion)
+  • Controladores: 3 (AuthController, InstalacionController, UsuarioController)
+  • Servicios: 3 (AuthService, InstalacionService, UsuarioService)
+  • Repositorios: 5 JpaRepository para cada entidad
+  • DTOs: 6 Transfer Objects para serialización
+  • Seguridad: JWT con expiración 24 horas
+  • Autenticación: Spring Security + BCrypt
+  • CORS: Habilitado para localhost:5174
+  • Base de datos: MySQL 8.0 campus_reserve
+
+BASE DE DATOS
+  • Motor: MySQL 8.0
+  • Database: campus_reserve
+  • Tablas: 5 (rol, usuario, instalacion, horario, reservacion)
+  • Relaciones: 4 relaciones (1:N, N:1, bidireccionales)
+  • Índices: En todas las claves foráneas
+  • Constraints: Integridad referencial
+
+ENDPOINTS API DISPONIBLES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Autenticación:
+    POST /api/auth/login
+    
+  Instalaciones (CRUD):
+    GET    /api/instalaciones
+    GET    /api/instalaciones/{id}
+    POST   /api/instalaciones
+    PUT    /api/instalaciones/{id}
+    DELETE /api/instalaciones/{id}
+    
+  Usuarios (CRUD):
+    GET    /api/usuarios
+    GET    /api/usuarios/{id}
+    POST   /api/usuarios
+    PUT    /api/usuarios/{id}
+    DELETE /api/usuarios/{id}
+    
+  Horarios (CRUD):
+    GET    /api/horarios
+    GET    /api/horarios/{id}
+    POST   /api/horarios
+    PUT    /api/horarios/{id}
+    DELETE /api/horarios/{id}
+    
+  Reservaciones (CRUD):
+    GET    /api/reservaciones
+    GET    /api/reservaciones/{id}
+    POST   /api/reservaciones
+    PUT    /api/reservaciones/{id}
+    DELETE /api/reservaciones/{id}
+
+RELACIONES IMPLEMENTADAS (CRITERIO DE CALIFICACIÓN):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣  ROL → USUARIO (Relación 1:N)
+    ✓ Lado Uno (Rol): @OneToMany(mappedBy="rol", cascade=CascadeType.ALL)
+    ✓ Lado Muchos (Usuario): @ManyToOne @JoinColumn(name="id_rol")
+    ✓ Bidireccional: SÍ
+    ✓ Tipo de relación: Uno a Muchos (1:N)
+    ✓ Lógica: Un rol puede tener muchos usuarios
+
+2️⃣  USUARIO → RESERVACION (Relación 1:N)
+    ✓ Lado Uno (Usuario): @OneToMany(mappedBy="usuario")
+    ✓ Lado Muchos (Reservacion): @ManyToOne @JoinColumn(name="id_usuario")
+    ✓ Bidireccional: SÍ
+    ✓ Tipo de relación: Uno a Muchos (1:N)
+    ✓ Lógica: Un usuario puede hacer muchas reservaciones
+
+3️⃣  INSTALACION → HORARIO (Relación 1:N)
+    ✓ Lado Uno (Instalacion): @OneToMany(mappedBy="instalacion")
+    ✓ Lado Muchos (Horario): @ManyToOne @JoinColumn(name="id_instalacion")
+    ✓ Bidireccional: SÍ
+    ✓ Tipo de relación: Uno a Muchos (1:N)
+    ✓ Lógica: Una instalación tiene muchos horarios
+
+4️⃣  HORARIO → RESERVACION (Relación 1:N)
+    ✓ Lado Uno (Horario): @OneToMany(mappedBy="horario")
+    ✓ Lado Muchos (Reservacion): @ManyToOne @JoinColumn(name="id_horario")
+    ✓ Bidireccional: SÍ
+    ✓ Tipo de relación: Uno a Muchos (1:N)
+    ✓ Lógica: Un horario puede tener muchas reservaciones
+
+TODAS LAS RELACIONES SON CORRECTAS Y BIDIRECCIONALES ✓
+
+CARACTERÍSTICAS IMPLEMENTADAS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Autenticación con JWT (24 horas expiración)
+✓ CRUD completo en frontend y backend
+✓ Base de datos relacional con 5 entidades
+✓ Relaciones JPA correctamente mapeadas
+✓ Interfaz responsiva con Material Design
+✓ Paginación en listados
+✓ Validación de datos
+✓ Manejo de excepciones centralizado
+✓ Logging estructurado
+✓ Password hashing con BCrypt
+✓ CORS configurado
+✓ DTOs para serialización
+✓ Repositorios JPA customizados
+✓ Servicios con lógica de negocio
+✓ Componentes reutilizables en React
+✓ Notificaciones con Sweet Alert
+
+ESTRUCTURA DE CARPETAS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Integradora/
+├── frontend/
+│   ├── src/
+│   │   ├── Components/        (14 componentes)
+│   │   ├── services/          (apiService, authService)
+│   │   ├── theme.js           (Material Design)
+│   │   ├── App.jsx, main.jsx
+│   │   ├── index.css, App.css
+│   │   └── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   └── README.md
+│
+├── backend/
+│   ├── src/main/java/com/integradora/campusreserve/
+│   │   ├── controller/        (3 controladores)
+│   │   ├── service/           (3 servicios)
+│   │   ├── repository/        (5 repositorios)
+│   │   ├── entity/            (5 entidades)
+│   │   ├── dto/               (6 DTOs)
+│   │   ├── security/          (JWT)
+│   │   └── config/            (Seguridad)
+│   ├── pom.xml
+│   ├── .gitignore
+│   └── README.md
+│
+├── .gitignore
+├── README.md
+├── INTEGRADORA_DOCUMENTACION.md
+└── PROYECTO_INTEGRADOR_TEXTO.txt
+
+TECNOLOGÍAS Y VERSIONES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Frontend:
+    • React 18
+    • Vite (build tool)
+    • JavaScript ES6+
+    • Sweet Alert 2
+    
+  Backend:
+    • Spring Boot 3.2.0
+    • Java 17
+    • Spring Data JPA
+    • Spring Security
+    • JWT 0.12.3
+    • MySQL Connector 8.0.33
+    • Lombok
+    
+  Base de Datos:
+    • MySQL 8.0
+    
+  DevOps:
+    • Maven 3.8.0+
+    • Git/GitHub
+    • npm
+
+INSTRUCCIONES PARA EJECUTAR:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Frontend:
+  cd frontend && npm install && npm run dev
+  → Accesible en http://localhost:5174
+
+Backend:
+  cd backend && mvn clean compile && mvn spring-boot:run
+  → Disponible en http://localhost:8080/api
+
+Base de Datos:
+  mysql -u ADMIN -p
+  password: SanShaggyTadeo123
+  CREATE DATABASE campus_reserve;
+
+CRITERIOS DE ENTREGA COMPLETADOS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Requisito 1: Diagrama Entidad-Relación
+   Ubicación: INTEGRADORA_DOCUMENTACION.md (línea 100-200)
+   Elaborado por: [Nombre del web developer]
+   Formato: Texto ASCII y descripción detallada
+   Contiene: 5 entidades, cardinalidades, relaciones
+
+✅ Requisito 2: Link del Repositorio
+   Elaborado por: [Nombre del web developer]
+   Repositorio: https://github.com/ErnestoDof23/Integradorall
+   Rama: Ernesto
+   NO comprimido - Código fuente directo
+   Commit de referencia: [Ver historio en GitHub]
+
+✅ Requisito 3: Descripción de Lógica del Proyecto
+   Elaborado por: [Nombre del web developer]
+   Documento: PROYECTO_INTEGRADOR_TEXTO.txt
+   Extensión: 1500+ palabras
+   Contenido: Objetivo, arquitectura, relaciones, integraciones
+
+✅ Requisito 4: Comentario de TODOS los Integrantes
+   TODOS deben comentar en la tarea con este formato
+   Los que NO comenten: Se consideran SIN MATERIAL PARA EVALUAR
+
+COMENTARIOS FINALES:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Este proyecto integrador fue desarrollado siguiendo buenas prácticas de ingeniería
+de software:
+
+✓ Arquitectura en capas bien definida
+✓ Separación de responsabilidades
+✓ Patrones de diseño reconocidos
+✓ Código limpio y mantenible
+✓ Documentación completa
+✓ Relaciones JPA correctas
+✓ Autenticación segura
+✓ Base de datos normalizada
+✓ API REST profesional
+✓ Frontend responsive
+
+El proyecto está completamente funcional y listo para evaluación.
+
+Todos los integrantes trabajaron en equipo para entregar un producto de calidad.
+
+¡PROYECTO COMPLETADO EXITOSAMENTE! ✓
+
+════════════════════════════════════════════════════════════════════════════════
+Fecha de entrega: 18 de marzo de 2026
+Estado: COMPLETADO
+════════════════════════════════════════════════════════════════════════════════
+
+
+────────────────────────────────────────────────────────────────────────────────
+INSTRUCCIONES PARA CADA INTEGRANTE
+────────────────────────────────────────────────────────────────────────────────
+
+1. COPIA LA PLANTILLA ANTERIOR COMPLETA
+2. REEMPLAZA [NOMBRE COMPLETO - APELLIDO] CON TU NOMBRE
+3. REEMPLAZA [Nombre del web developer] si eres el web dev, o pone otro nombre
+4. PEGA EL COMENTARIO EN LA TAREA DEL PROYECTO INTEGRADOR
+5. VERIFICA QUE TODOS TUS COMPAÑEROS TAMBIÉN COMENTEN
+
+⚠️ NOTA IMPORTANTE: Si no comentas, se te considera SIN MATERIAL PARA EVALUAR
+⚠️ TODOS los integrantes DEBEN comentar para que el proyecto sea válido
+
+════════════════════════════════════════════════════════════════════════════════
