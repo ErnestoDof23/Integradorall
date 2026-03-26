@@ -27,10 +27,17 @@ function App() {
   };
 
   const handleLogin = (userObj) => {
-    if (userObj && userObj.email) {
+    if (userObj && (userObj.email || userObj.correoInstitucional)) {
+      const userData = {
+        id: userObj.idUsuario || userObj.id,
+        email: userObj.correoInstitucional || userObj.email,
+        fullName: userObj.nombre || userObj.fullName || 'Administrador',
+        role: userObj.rolNombre || userObj.role || 'Usuario',
+        bloqueado: userObj.bloqueado || false,
+      };
       setIsLoggedIn(true);
-      setUser(userObj);
-      localStorage.setItem('user', JSON.stringify(userObj));
+      setUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('isLoggedIn', 'true');
       setLoginError('');
     } else {

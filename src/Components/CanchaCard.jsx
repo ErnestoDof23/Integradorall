@@ -24,7 +24,10 @@ function CanchaCard({ id, nombre, name, foto, img, descripcion, type, estado, st
   const displayName = nombre || name || 'Sin nombre';
   const displayImg = foto || img || '';
   const displayType = descripcion || type || 'Cancha';
-  const displayStatus = estado || status || 'Disponibles';
+  // Normalizar estado: el backend usa 'Disponible' o 'Reservado'
+  const displayStatus = (estado === 'Disponible' || estado === 'Reservado') ? 
+    (estado === 'Disponible' ? 'Disponibles' : 'Reservadas') : 
+    (status || 'Disponibles');
 
   const cardContainerStyle = {
     display: 'flex',

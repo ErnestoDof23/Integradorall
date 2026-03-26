@@ -15,36 +15,39 @@ import { IconX, IconChevronDown } from './Icons';
  */
 function CanchaModal({ isOpen, onClose, onSave, cancha }) {
   const [formData, setFormData] = useState({
-    name: '',
-    type: 'Cancha',
-    img: null,
+    nombre: '',
+    descripcion: 'Cancha',
+    foto: null,
     preview: null,
+    estado: 'Disponible',
   });
 
   useEffect(() => {
     if (cancha) {
       setFormData({
-        name: cancha.name,
-        type: cancha.type || 'Cancha',
-        img: cancha.img,
-        preview: cancha.img,
+        nombre: cancha.nombre || cancha.name || '',
+        descripcion: cancha.descripcion || cancha.type || 'Cancha',
+        foto: cancha.foto || cancha.img || null,
+        preview: cancha.foto || cancha.img || null,
+        estado: cancha.estado || 'Disponible',
       });
     } else {
       setFormData({
-        name: '',
-        type: 'Cancha',
-        img: null,
+        nombre: '',
+        descripcion: 'Cancha',
+        foto: null,
         preview: null,
+        estado: 'Disponible',
       });
     }
   }, [cancha, isOpen]);
 
   const handleNameChange = (e) => {
-    setFormData({ ...formData, name: e.target.value });
+    setFormData({ ...formData, nombre: e.target.value });
   };
 
   const handleTypeChange = (e) => {
-    setFormData({ ...formData, type: e.target.value });
+    setFormData({ ...formData, descripcion: e.target.value });
   };
 
   const handleImageChange = (e) => {
@@ -66,7 +69,7 @@ function CanchaModal({ isOpen, onClose, onSave, cancha }) {
       reader.onloadend = () => {
         setFormData({
           ...formData,
-          img: file,
+          foto: file,
           preview: reader.result,
         });
       };
@@ -77,7 +80,7 @@ function CanchaModal({ isOpen, onClose, onSave, cancha }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.name.trim()) {
+    if (!formData.nombre.trim()) {
       Swal.fire({
         title: 'Error',
         text: 'Por favor ingresa un nombre para la cancha',
@@ -97,17 +100,20 @@ function CanchaModal({ isOpen, onClose, onSave, cancha }) {
       return;
     }
 
+    // Enviar con los nombres de campos que el backend espera
     onSave({
-      name: formData.name,
-      type: formData.type,
-      img: formData.preview,
+      nombre: formData.nombre,
+      descripcion: formData.descripcion,
+      foto: formData.preview,
+      estado: formData.estado,
     });
 
     setFormData({
-      name: '',
-      type: 'Cancha',
-      img: null,
+      nombre: '',
+      descripcion: 'Cancha',
+      foto: null,
       preview: null,
+      estado: 'Disponible',
     });
   };
 
@@ -263,7 +269,7 @@ function CanchaModal({ isOpen, onClose, onSave, cancha }) {
             <Input
               type="text"
               placeholder="Ej: Basketball, Volleyball..."
-              value={formData.name}
+              value={formData.nombre}
               onChange={handleNameChange}
               style={{ padding: `${theme.spacing[2]} ${theme.spacing[3]}` }}
             />
@@ -275,7 +281,7 @@ function CanchaModal({ isOpen, onClose, onSave, cancha }) {
             <div style={selectContainerStyle}>
               <select 
                 style={selectStyle} 
-                value={formData.type} 
+                value={formData.descripcion} 
                 onChange={handleTypeChange}
               >
                 <option value="Cancha">Cancha</option>

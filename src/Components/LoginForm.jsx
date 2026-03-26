@@ -62,12 +62,44 @@ function LoginForm({ onLogin, error }) {
       // Intentar login con el backend
       const response = await authService.login(username.trim(), password);
       
+      // Extraer datos del usuario del backend
+      const userData = response.usuario || response;
+      
+      // El backend devuelve 'rolNombre' directamente, no 'rol.nombre'
+      const rolNombre = userData.rolNombre || userData.rol?.nombre || userData.rol || 'Usuario';
+      const esBloqueado = userData.bloqueado === true;
+      
+      // Validar si está bloqueado
+      if (esBloqueado) {
+        Swal.fire({
+          title: 'Cuenta Bloqueada',
+          text: 'Tu cuenta ha sido bloqueada por un administrador.',
+          icon: 'error',
+          confirmButtonColor: theme.primary.main,
+        });
+        setIsLoading(false);
+        return;
+      }
+      
+      // Validar que sea administrador
+      if (rolNombre !== 'Administrador') {
+        Swal.fire({
+          title: 'Acceso Denegado',
+          text: 'Solo los administradores pueden acceder al sistema.',
+          icon: 'warning',
+          confirmButtonColor: theme.primary.main,
+        });
+        setIsLoading(false);
+        return;
+      }
+      
       // Login exitoso
       const user = {
-        id: response.usuario?.id || response.id,
-        email: response.usuario?.email || response.email || username,
-        fullName: response.usuario?.nombre || response.nombre || 'Usuario',
-        role: response.usuario?.rol || response.rol || 'Usuario',
+        id: userData.idUsuario || userData.id,
+        email: userData.correoInstitucional || userData.email || username,
+        fullName: userData.nombre || userData.fullName || 'Administrador',
+        role: rolNombre,
+        bloqueado: esBloqueado,
       };
       
       onLogin(user);

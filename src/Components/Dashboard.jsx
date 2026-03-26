@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import Card from './Card';
 import Canchas from './Canchas';
@@ -6,6 +6,7 @@ import Users from './Users';
 import { theme } from '../theme';
 import fondoImg from '../assets/fut.jpg';
 import { IconUser, IconDashboard, IconBall, IconUsers } from './Icons';
+import apiService from '../services/apiService';
 
 /**
  * Dashboard - Componente principal con layout sidebar + contenido
@@ -17,17 +18,60 @@ function Dashboard({ user, onLogout }) {
   const [section, setSection] = useState(() => {
     return localStorage.getItem('dashboardSection') || 'dashboard';
   });
+  
+  // Estados para estadísticas dinámicas
+  const [stats, setStats] = useState({
+    canchasActivas: 0,
+    canchasDesactivadas: 0,
+    totalCanchas: 0,
+    totalUsuarios: 0,
+  });
+  const [loadingStats, setLoadingStats] = useState(true);
 
   React.useEffect(() => {
     localStorage.setItem('dashboardSection', section);
   }, [section]);
 
-  // Dashboard stats
-  const dashboardData = {
-    canchasActivas: 5,
-    canchasDesactivadas: 1,
-    registrosHoy: 12,
-  };
+  // Cargar estadísticas desde el backend
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        setLoadingStats(true);
+        
+        // Cargar canchas
+        const canchasData = await apiService.getInstalaciones();
+        const canchasArray = Array.isArray(canchasData) ? canchasData : canchasData.data || [];
+        
+        // Cargar usuarios
+        const usuariosData = await apiService.getUsuarios();
+        const usuariosArray = Array.isArray(usuariosData) ? usuariosData : usuariosData.data || [];
+        
+        // Calcular estadísticas
+        const activas = canchasArray.filter(c => c.estado === 'Disponible' || c.estado === 'Activa').length;
+        const desactivadas = canchasArray.filter(c => c.estado === 'NoDisponible' || c.estado === 'Inactiva').length;
+        
+        setStats({
+          canchasActivas: activas,
+          canchasDesactivadas: desactivadas,
+          totalCanchas: canchasArray.length,
+          totalUsuarios: usuariosArray.length,
+        });
+      } catch (error) {
+        console.error('Error al cargar estadísticas:', error);
+        // Valores por defecto en caso de error
+        setStats({
+          canchasActivas: 0,
+          canchasDesactivadas: 0,
+          totalCanchas: 0,
+          totalUsuarios: 0,
+        });
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    loadStats();
+  }, []);
 
   // Estilos del sidebar
   const sidebarStyle = {
@@ -177,27 +221,35 @@ function Dashboard({ user, onLogout }) {
           <>
             <div style={cardsContainerStyle}>
               <Card elevation={1} style={statCardStyle}>
-                <div style={statNumberStyle}>{dashboardData.canchasActivas}</div>
-                <div style={statLabelStyle}>Canchas Activas</div>
+                <div style={statNumberStyle}>{loadingStats ? '-' : stats.canchasActivas}</div>
+                <div style={statLabelStyle}>Canchas Disponibles</div>
               </Card>
               <Card elevation={1} style={statCardStyle}>
-                <div style={statNumberStyle}>{dashboardData.canchasDesactivadas}</div>
-                <div style={statLabelStyle}>Canchas Desactivadas</div>
+                <div style={statNumberStyle}>{loadingStats ? '-' : stats.canchasDesactivadas}</div>
+                <div style={statLabelStyle}>Canchas No Disponibles</div>
               </Card>
               <Card elevation={1} style={statCardStyle}>
-                <div style={statNumberStyle}>{dashboardData.registrosHoy}</div>
-                <div style={statLabelStyle}>Registros Hoy</div>
+                <div style={statNumberStyle}>{loadingStats ? '-' : stats.totalUsuarios}</div>
+                <div style={statLabelStyle}>Usuarios Registrados</div>
               </Card>
             </div>
 
             <div style={chartsContainerStyle}>
-              <Card elevation={1} title="Registros Semanales por Horario">
+              <Card elevation={1} title="Total de Canchas">
                 <div style={{ 
                   textAlign: 'center', 
                   padding: theme.spacing[6],
-                  color: theme.neutral[400],
+                  color: theme.neutral[600],
                   fontFamily: theme.typography.fontFamily,
                 }}>
+                  <div style={{
+                    fontSize: '48px',
+                    fontWeight: 'bold',
+                    color: theme.primary.main,
+                  }}>
+                    {loadingStats ? '-' : stats.totalCanchas}
+                  </div>
+                
                   📊 Gráfico anillo
                 </div>
               </Card>

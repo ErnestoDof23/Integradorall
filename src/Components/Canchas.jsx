@@ -24,13 +24,29 @@ function Canchas() {
       try {
         setLoading(true);
         const data = await apiService.getInstalaciones();
-        const canchasArray = Array.isArray(data) ? data : data.data || [];
+        console.log('Datos recibidos del backend:', data);
+        
+        // Manejar diferentes formatos de respuesta
+        let canchasArray = [];
+        if (Array.isArray(data)) {
+          canchasArray = data;
+        } else if (data && typeof data === 'object') {
+          // Si es un objeto, buscar el array dentro
+          canchasArray = data.data || data.instalaciones || data.canchas || Object.values(data).find(arr => Array.isArray(arr)) || [];
+        }
+        
+        console.log('Canchas procesadas:', canchasArray);
         setCanchas(canchasArray);
+        
+        if (canchasArray.length === 0) {
+          console.warn('No se encontraron canchas en la respuesta');
+        }
       } catch (error) {
         console.error('Error al cargar canchas:', error);
+        setCanchas([]); // Establecer array vacío en caso de error
         Swal.fire({
           title: 'Error',
-          text: 'No se pudieron cargar las canchas',
+          text: `No se pudieron cargar las canchas: ${error.message}`,
           icon: 'error',
           confirmButtonColor: theme.primary.main,
         });
@@ -88,14 +104,15 @@ function Canchas() {
   };
 
   const handleEditCancha = (id) => {
-    const cancha = canchas.find(c => c.id === id);
+    const cancha = canchas.find(c => c.idInstalacion === id || c.id === id);
     setEditingCancha(cancha);
     setIsModalOpen(true);
   };
 
   const handleSaveEdit = async (formData) => {
     try {
-      await apiService.actualizarInstalacion(editingCancha.id, formData);
+      const id = editingCancha.idInstalacion || editingCancha.id;
+      await apiService.actualizarInstalacion(id, formData);
       
       // Recargar las canchas del backend
       const data = await apiService.getInstalaciones();
@@ -123,7 +140,7 @@ function Canchas() {
   };
 
   const handleDeleteCancha = (id) => {
-    const cancha = canchas.find(c => c.id === id);
+    const cancha = canchas.find(c => c.idInstalacion === id || c.id === id);
     
     Swal.fire({
       title: '¿Eliminar Cancha?',
@@ -262,7 +279,8 @@ function Canchas() {
           <div style={gridStyle}>
             {currentCanchas.map((c) => (
               <CanchaCard 
-                key={c.id} 
+                key={c.idInstalacion || c.id} 
+                id={c.idInstalacion || c.id}
                 {...c} 
                 onEdit={handleEditCancha}
                 onDelete={handleDeleteCancha}

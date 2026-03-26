@@ -31,13 +31,28 @@ function Users({ currentUser }) {
       try {
         setLoading(true);
         const data = await apiService.getUsuarios();
-        const usersArray = Array.isArray(data) ? data : data.data || [];
+        console.log('Datos de usuarios recibidos:', data);
+        
+        // Manejar diferentes formatos de respuesta
+        let usersArray = [];
+        if (Array.isArray(data)) {
+          usersArray = data;
+        } else if (data && typeof data === 'object') {
+          usersArray = data.data || data.usuarios || data.users || Object.values(data).find(arr => Array.isArray(arr)) || [];
+        }
+        
+        console.log('Usuarios procesados:', usersArray);
         setUsers(usersArray);
+        
+        if (usersArray.length === 0) {
+          console.warn('No se encontraron usuarios en la respuesta');
+        }
       } catch (error) {
         console.error('Error al cargar usuarios:', error);
+        setUsers([]); // Establecer array vacío en caso de error
         Swal.fire({
           title: 'Error',
-          text: 'No se pudieron cargar los usuarios',
+          text: `No se pudieron cargar los usuarios: ${error.message}`,
           icon: 'error',
           confirmButtonColor: theme.primary.main,
         });
@@ -60,7 +75,7 @@ function Users({ currentUser }) {
       return;
     }
 
-    const target = users.find((u) => u.id === id);
+    const target = users.find((u) => u.idUsuario === id || u.id === id);
     
     if (!target) {
       Swal.fire({
@@ -74,17 +89,19 @@ function Users({ currentUser }) {
 
     try {
       // Actualizar el usuario en el backend
-      const newState = !target.bloqueado; // O el campo correspondiente en el backend
-      await apiService.actualizarUsuario(id, { ...target, bloqueado: newState });
+      const userId = target.idUsuario || target.id;
+      const newState = !target.bloqueado;
+      await apiService.actualizarUsuario(userId, { ...target, bloqueado: newState });
       
       // Recargar usuarios del backend
       const data = await apiService.getUsuarios();
       const usersArray = Array.isArray(data) ? data : data.data || [];
       setUsers(usersArray);
 
+      const actionText = newState ? 'bloqueado' : 'desbloqueado';
       Swal.fire({
-        title: newState ? 'Bloqueado' : 'Desbloqueado',
-        text: `El usuario ha sido ${newState ? 'bloqueado' : 'desbloqueado'} correctamente.`,
+        title: '¡Actualizado!',
+        text: `${target.nombre} ha sido ${actionText} correctamente.`,
         icon: 'success',
         confirmButtonColor: theme.primary.main,
         timer: 2500,
@@ -123,8 +140,11 @@ function Users({ currentUser }) {
       return;
     }
 
-    const adminCount = users.filter((u) => u.rol?.nombre === 'Administrador' || u.rol === 'Administrador').length;
-    if ((target.rol?.nombre === 'Administrador' || target.rol === 'Administrador') && adminCount <= 1) {
+    const esActualmenteAdmin = target.rol?.nombre === 'Administrador';
+    const adminCount = users.filter((u) => u.rol?.nombre === 'Administrador').length;
+    
+    // Si es admin y es el único, no permitir remover
+    if (esActualmenteAdmin && adminCount <= 1) {
       Swal.fire({
         title: 'Operación no permitida',
         text: 'No se puede quitar permisos de administrador al último administrador del sistema.',
@@ -135,23 +155,30 @@ function Users({ currentUser }) {
     }
 
     try {
-      // Cambiar el rol del usuario
-      const newRol = target.rol?.nombre === 'Administrador' || target.rol === 'Administrador' ? 2 : 1; // 1=Admin, 2=User (ajusta según tu BD)
+      const userId = target.idUsuario || target.id;
+      // El nuevo rol será el opuesto del actual
+      // Enviamos el ID del rol: 1=Administrador, 2=Usuario (según la BD)
+      const nuevoIdRol = esActualmenteAdmin ? 2 : 1; // Cambiar a Usuario o Administrador
+      
       const updateData = {
         ...target,
-        rol: { ...target.rol, idRol: newRol }
+        rol: { 
+          idRol: nuevoIdRol,
+          nombre: nuevoIdRol === 1 ? 'Administrador' : 'Usuario'
+        }
       };
       
-      await apiService.actualizarUsuario(target.idUsuario || target.id, updateData);
+      await apiService.actualizarUsuario(userId, updateData);
       
       // Recargar usuarios del backend
       const data = await apiService.getUsuarios();
       const usersArray = Array.isArray(data) ? data : data.data || [];
       setUsers(usersArray);
 
+      const nuevoRol = esActualmenteAdmin ? 'Usuario' : 'Administrador';
       Swal.fire({
-        title: 'Rol actualizado',
-        text: `${target.nombre} ha sido actualizado correctamente.`,
+        title: '¡Rol actualizado!',
+        text: `${target.nombre} es ahora ${nuevoRol.toLowerCase()}.`,
         icon: 'success',
         confirmButtonColor: theme.primary.main,
         timer: 2500,

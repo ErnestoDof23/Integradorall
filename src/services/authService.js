@@ -17,7 +17,7 @@ class AuthService {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ correoInstitucional: email, password }),
     });
 
     if (!response.ok) {
@@ -36,6 +36,11 @@ class AuthService {
     // Guardar token en localStorage
     if (data.token) {
       localStorage.setItem('token', data.token);
+    }
+    
+    // Guardar datos del usuario en localStorage
+    if (data.usuario) {
+      localStorage.setItem('user', JSON.stringify(data.usuario));
     }
 
     return data;
