@@ -1,32 +1,42 @@
 # Changelog
 
-## [1.0.0-sprint2-frontend] - 2026-06-18
+## [1.0.0-sprint4-frontend-proy1] - 2026-06-22
 
-### Added - Sprint 2 Features
-- ShareButtons: compartir en LinkedIn, Twitter, WhatsApp y Web Share API
-- FavoriteButton: marcar diagnosticos como favoritos con persistencia en localStorage
-- Filtro de favoritos en historial de diagnosticos
-- EncuestaSatisfaccion: encuesta de 3 preguntas post-diagnostico
-- ResumenDiagnostico: pre-visualizacion antes de finalizar con checkbox de confirmacion
-- Perfil de usuario con informacion basica
-- Historial de diagnosticos completo (/historial)
-- ComparisonService: comparar diagnosticos anteriores
-- EmailService: notificaciones por email
-- Resultado detallado: fortalezas, areas de mejora, recomendaciones por categoria
-- React Helmet async con titulos y meta descriptions dinamicos por pagina
-- SEO: meta tags optimizados en Dashboard, Result, Historial
-- Preferencias de movimiento reducido (prefers-reduced-motion)
-- Question indicators: puntos de progreso por pregunta (respondida/pendiente/actual)
-- AutoSaveIndicator con estado visual de guardado
-- beforeunload warning para cambios sin guardar
-- Recuperacion de progreso desde localStorage en recarga de pagina
+### Added - Semana 4 Features
+- **ShareButtons**: compartir diagnostico en LinkedIn, Twitter, WhatsApp y Web Share API
+- **FavoriteButton**: marcar diagnosticos como favoritos con persistencia en localStorage
+- **Filtro de favoritos**: toggle "Solo favoritos" en historial de diagnosticos
+- **EncuestaSatisfaccion**: encuesta de 3 preguntas post-diagnostico (1-5 estrellas)
+- **ResumenDiagnostico**: pre-visualizacion de respuestas antes de finalizar con checkbox de confirmacion
+- **Perfil de usuario**: informacion basica del usuario autenticado
+- **Historial completo** en `/historial` con badges de estado, scores, y acciones rapidas
+- **ComparisonService**: comparar diagnosticos anteriores
+- **EmailService**: notificaciones por email
+- **Resultado detallado**: fortalezas, areas de mejora, recomendaciones por categoria
+- **Question indicators**: puntos de progreso por pregunta (respondida/pendiente/actual)
+- **AutoSaveIndicator**: estado visual de guardado ("Guardando..." / "Guardado HH:MM")
+- **beforeunload warning**: proteccion contra cierre con cambios sin guardar
+- **Recuperacion de progreso**: respuestas restauradas desde localStorage al recargar
 
-### Fixed (Backend)
-- Response format: todos los endpoints retornan datos directos (no wrapped objects)
+### Fixed - Bugs Semana 4
+- Backend response format: todos los endpoints retornan datos directos (no wrapped objects)
 - Niveles de respuesta: optimo/aceptable/malo (antes: cumple/cumple_parcial/no_cumple)
-- /finalizar retorna DiagnosisResult completo con categorias y proyecto_nombre
-- /categorias/:id/preguntas retorna array directo
+- `/finalizar` retorna DiagnosisResult completo con categorias y proyecto_nombre
+- `/categorias/:id/preguntas` retorna array directo
 - Proyecto campos opcionales con defaults (cliente, fecha, ciudad, tipo)
+- Proxy Vite apuntaba a puerto incorrecto (corregido a localhost:3000)
+- Mock mode residual eliminado de api.ts
+
+### UX/UI Improvements
+- Result chunk optimizado: 614KB -> 15KB (dynamic import jsPDF + html2canvas)
+- jsPDF y html2canvas cargados bajo demanda (solo al descargar PDF)
+- Toast notifications con aria-live para accesibilidad
+- Focus-visible en todos los elementos interactivos
+- Skeleton loaders en todas las paginas
+- Empty states con CTAs en Dashboard e Historial
+- Responsive design optimizado para movil
+- ErrorBoundary global con pagina de fallback
+- Skip link para navegacion por teclado
 
 ### Changed
 - Auto-save interval: 30s -> 15s
@@ -35,9 +45,26 @@
 
 ### Documentation
 - ACCEPTANCE_FINAL.md - 52 pruebas de aceptacion finales
-- USER_GUIDE_FINAL.md - guia completa con redes sociales, favoritos, perfil
+- USER_GUIDE_COMPLETE.md - guia consolidada completa
 - DEMO_SCRIPT_SPRINT2.md - script de demo 5 minutos
-- REGRESSION_FRONTEND.md - regresion con 42 casos
+- REGRESSION_FINAL_SEMANA4.md - regresion final semana 4
+- CHANGELOG.md - este archivo
+
+---
+
+## [1.0.0-sprint2-frontend] - 2026-06-18
+
+### Added - Sprint 2 Features
+- ShareButtons: compartir en LinkedIn, Twitter, WhatsApp y Web Share API
+- FavoriteButton: marcar diagnosticos como favoritos con persistencia en localStorage
+- Filtro de favoritos en historial de diagnosticos
+- EncuestaSatisfaccion: encuesta de 3 preguntas post-diagnostico
+- ResumenDiagnostico: pre-visualizacion antes de finalizar con checkbox de confirmacion
+
+### Performance (Sprint 2)
+- Result chunk: 614KB -> 15KB (dynamic import de jsPDF + html2canvas)
+- jsPDF y html2canvas se cargan solo cuando el usuario descarga PDF
+- Bundle principal: 314KB gzip: 102KB
 
 ---
 
