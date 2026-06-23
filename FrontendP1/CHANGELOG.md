@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.0.0-semana5-frontend-proy1] - 2026-06-22
+
+### Fixed - Bugs Criticos
+- Progreso se pierde al recargar: persistir diagnostico_id en localStorage
+- PDF no genera en Safari: configuracion html2canvas compatible con Safari
+- Boton Compartir no funciona en movil: fallback a clipboard + boton Copiar
+
+### Added - Semana 5 Features
+- Indicador de tiempo estimado restante en cuestionario
+- Permitir saltar preguntas y completar sin responder todas
+- Boton "Copiar enlace" en ShareButtons
+- Prefetch de recursos criticos en LandingPage
+- Persistencia de DiagnosisContext en localStorage
+
+### Documentation
+- ACTION_ITEMS.md - tareas priorizadas
+- REGRESSION_TEST_SEMANA5.md - 10 pruebas, 10/10 pasadas
+
+---
+
 ## [1.0.0-sprint4-frontend-proy1] - 2026-06-22
 
 ### Added - Semana 4 Features
