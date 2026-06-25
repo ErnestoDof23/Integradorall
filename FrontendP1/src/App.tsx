@@ -7,6 +7,7 @@ import { ThemeProvider } from './hooks/useTheme';
 import { ToastProvider } from './components/ui/Toast';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
+import GuestRoute from './components/GuestRoute';
 import SkipLink from './components/SkipLink';
 import FeedbackButton from './components/FeedbackButton';
 import Login from './pages/Login';
@@ -59,9 +60,9 @@ export default function App() {
                 <SkipLink />
                 <FeedbackButton />
                 <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/landing" element={<Suspense fallback={<PageSpinner />}><LandingPage /></Suspense>} />
+                  <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+                  <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
+                  <Route path="/landing" element={<GuestRoute><Suspense fallback={<PageSpinner />}><LandingPage /></Suspense></GuestRoute>} />
                   <Route path="/admin" element={<ProtectedRoute><Suspense fallback={<PageSpinner />}><AdminDashboard /></Suspense></ProtectedRoute>} />
                   <Route
                     path="/dashboard"

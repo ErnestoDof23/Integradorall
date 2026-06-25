@@ -106,7 +106,7 @@ export default function PropertyData() {
       setProperty(form);
       navigate('/secciones');
     } catch {
-      setErrors({ submit: 'Error al conectar con el servidor. Verifica que el backend esté corriendo en localhost:3001' });
+      setErrors({ submit: 'Error al conectar con el servidor. Verifica que el backend este corriendo en localhost:3000' });
     } finally {
       setLoading(false);
     }
