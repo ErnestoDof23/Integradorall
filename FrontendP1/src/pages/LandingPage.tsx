@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Building2, BarChart3, Share2, Shield, ArrowRight, Star } from 'lucide-react';
-import { Button, Card } from '../components/ui';
+import { Card } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
 
 const features = [
@@ -40,6 +40,8 @@ export default function LandingPage() {
       {/* Hero */}
       <header className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-pink-700">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTR2Mkg4VjI4aDI4ek0xMiAxNnYySDR2LTJoOHptMjQgMHYySDI4di0yaDh6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
+
+        {/* Nav */}
         <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
             <Building2 className="h-8 w-8 text-white" />
@@ -47,22 +49,32 @@ export default function LandingPage() {
           </div>
           <div className="flex gap-3">
             {user ? (
-              <Button onClick={() => navigate('/dashboard')} className="bg-white text-primary hover:bg-gray-100">
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-primary shadow-sm transition-all hover:bg-gray-100 hover:shadow-md cursor-pointer"
+              >
                 Ir al Dashboard
-              </Button>
+              </button>
             ) : (
               <>
-                <Button onClick={() => navigate('/login')} variant="outline" className="border-white text-white hover:bg-white/10">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="rounded-lg border-2 border-white/40 px-4 py-2 text-sm font-semibold text-white transition-all hover:border-white hover:bg-white/10 cursor-pointer"
+                >
                   Iniciar Sesion
-                </Button>
-                <Button onClick={() => navigate('/register')} className="bg-white text-primary hover:bg-gray-100">
+                </button>
+                <button
+                  onClick={() => navigate('/register')}
+                  className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-primary shadow-sm transition-all hover:bg-gray-100 hover:shadow-md cursor-pointer"
+                >
                   Registrarse
-                </Button>
+                </button>
               </>
             )}
           </div>
         </nav>
 
+        {/* Hero content */}
         <div className="relative mx-auto max-w-6xl px-4 pb-20 pt-16 text-center sm:px-6 sm:pb-28 sm:pt-24">
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
             Evalua la accesibilidad de tus inmuebles
@@ -72,22 +84,19 @@ export default function LandingPage() {
             Reportes PDF, compartir en redes sociales y seguimiento de progreso.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button
-              size="lg"
+            <button
               onClick={() => user ? navigate('/dashboard') : navigate('/register')}
-              className="group bg-white text-primary hover:bg-gray-100"
+              className="group flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-bold text-primary shadow-lg transition-all hover:bg-gray-100 hover:shadow-xl cursor-pointer"
             >
               Comenzar diagnostico
-              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
+              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+            </button>
+            <button
               onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-              className="border-white/30 text-white hover:bg-white/10"
+              className="flex items-center gap-2 rounded-xl border-2 border-white/30 px-8 py-4 text-lg font-semibold text-white transition-all hover:border-white hover:bg-white/10 cursor-pointer"
             >
               Conocer mas
-            </Button>
+            </button>
           </div>
         </div>
       </header>
@@ -114,7 +123,9 @@ export default function LandingPage() {
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((f) => (
               <Card key={f.title} className="p-6">
-                <f.icon className="h-10 w-10 text-primary" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <f.icon className="h-6 w-6 text-primary" />
+                </div>
                 <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-dark-text">{f.title}</h3>
                 <p className="mt-2 text-sm text-gray-500 dark:text-dark-text-secondary">{f.desc}</p>
               </Card>
@@ -131,10 +142,10 @@ export default function LandingPage() {
             {[
               { step: '1', title: 'Crea tu proyecto', desc: 'Registrate, crea un proyecto y completa los datos del inmueble.' },
               { step: '2', title: 'Responde el cuestionario', desc: 'Evalua 5 categorias con 3 preguntas cada una. Guardado automatico.' },
-              { step: '3', title: 'Obtén tu reporte', desc: 'Visualiza resultados, descarga PDF y comparte en redes sociales.' },
+              { step: '3', title: 'Obten tu reporte', desc: 'Visualiza resultados, descarga PDF y comparte en redes sociales.' },
             ].map((s) => (
               <div key={s.step} className="flex flex-col items-center text-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-white">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-white shadow-lg">
                   {s.step}
                 </div>
                 <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-dark-text">{s.title}</h3>
@@ -178,14 +189,13 @@ export default function LandingPage() {
           <p className="mx-auto mt-4 max-w-xl text-pink-100">
             Es gratuito, rapido y accesible. Registrate en un minuto y empieza a evaluar tus inmuebles.
           </p>
-          <Button
-            size="lg"
+          <button
             onClick={() => user ? navigate('/dashboard') : navigate('/register')}
-            className="mt-8 bg-white text-primary hover:bg-gray-100"
+            className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-bold text-primary shadow-lg transition-all hover:bg-gray-100 hover:shadow-xl cursor-pointer"
           >
             Comenzar ahora - es gratis
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+            <ArrowRight className="h-5 w-5" />
+          </button>
         </div>
       </section>
 
