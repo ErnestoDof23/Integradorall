@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { AuthProvider } from './hooks/useAuth';
+import { AuthProvider, useAuth } from './hooks/useAuth';
 import { DiagnosisProvider } from './hooks/useDiagnosis';
 import { ThemeProvider } from './hooks/useTheme';
 import { ToastProvider } from './components/ui/Toast';
@@ -28,6 +28,16 @@ function PageSpinner() {
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
     </div>
   );
+}
+
+function NavigateToAppropriate() {
+  const { token } = useAuth();
+  const location = useLocation();
+
+  if (token) {
+    return <Navigate to="/dashboard" state={{ from: location }} replace />;
+  }
+  return <Navigate to="/landing" replace />;
 }
 
 function DiagnosisLayout() {
@@ -124,7 +134,7 @@ export default function App() {
                     />
                   </Route>
                   <Route path="/" element={<Navigate to="/landing" replace />} />
-                  <Route path="*" element={<Navigate to="/landing" replace />} />
+                  <Route path="*" element={<NavigateToAppropriate />} />
                 </Routes>
               </BrowserRouter>
             </AuthProvider>
