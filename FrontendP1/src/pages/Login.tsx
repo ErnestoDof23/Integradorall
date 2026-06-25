@@ -33,8 +33,8 @@ export default function Login() {
       navigate('/dashboard');
     } catch (err: unknown) {
       const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        'Error al iniciar sesión. Verifica tus credenciales.';
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
+        'Error al iniciar sesion. Verifica tus credenciales.';
       showToast(msg, 'error');
     } finally {
       setLoading(false);

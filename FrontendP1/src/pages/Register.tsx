@@ -36,7 +36,7 @@ export default function Register() {
       navigate('/dashboard');
     } catch (err: unknown) {
       const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
         'Error al registrar. Intenta con otro email.';
       showToast(msg, 'error');
     } finally {

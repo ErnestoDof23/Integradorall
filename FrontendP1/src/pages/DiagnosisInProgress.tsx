@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Check, Circle } from 'lucide-react';
 import { Button, Card, Header, RadioButtonGroup, TextArea } from '../components/ui';
 import AutoSaveIndicator from '../components/AutoSaveIndicator';
 import { useDiagnosis } from '../hooks/useDiagnosis';
+import { useToast } from '../components/ui/Toast';
 import { getPreguntas, saveRespuesta } from '../services/api';
 import type { Answer, AnswerLevel, Question } from '../types';
 
@@ -17,6 +18,7 @@ export default function DiagnosisInProgress() {
   const { categoryId: categoriaId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
   const { state, setAnswer } = useDiagnosis();
+  const { showToast } = useToast();
 
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
@@ -120,6 +122,10 @@ export default function DiagnosisInProgress() {
   };
 
   const handleComplete = () => {
+    if (!allAnswered) {
+      showToast(`Debes responder todas las preguntas antes de completar (${answeredCount}/${questions.length})`, 'error');
+      return;
+    }
     navigate('/secciones');
   };
 
