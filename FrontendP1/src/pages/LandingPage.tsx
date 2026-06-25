@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Building2, BarChart3, Share2, Shield, ArrowRight, Star } from 'lucide-react';
 import { Card } from '../components/ui';
+import ThemeToggle from '../components/ThemeToggle';
 import { useAuth } from '../hooks/useAuth';
 
 const features = [
@@ -45,9 +46,10 @@ export default function LandingPage() {
         <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
             <Building2 className="h-8 w-8 text-white" />
-            <span className="text-xl font-bold text-white">DiagnosticoInmobiliario</span>
+            <span className="text-xl font-bold text-white">TodoAccesible</span>
           </div>
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
             {user ? (
               <button
                 onClick={() => navigate('/dashboard')}
