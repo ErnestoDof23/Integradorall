@@ -184,7 +184,7 @@ export default function DiagnosisInProgress() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="space-y-4 text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-sm text-gray-500">Cargando preguntas...</p>
+          <p className="text-sm text-gray-500 dark:text-dark-text-secondary">Cargando preguntas...</p>
         </div>
       </div>
     );
@@ -192,14 +192,14 @@ export default function DiagnosisInProgress() {
 
   if (questions.length === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <p className="text-gray-500">No hay preguntas disponibles para esta categoría.</p>
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-dark-bg">
+        <p className="text-gray-500 dark:text-dark-text-secondary">No hay preguntas disponibles para esta categoría.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg">
       <Header
         title={state.categorias.find((c) => c.id === categoriaId)?.nombre || 'Diagnóstico'}
         showBack
@@ -210,10 +210,10 @@ export default function DiagnosisInProgress() {
         {/* Category progress bar */}
         <Card className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-gray-700">Progreso de categoria</span>
+            <span className="font-medium text-gray-700 dark:text-dark-text-secondary">Progreso de categoria</span>
             <span className="font-bold text-primary">{categoryPct}%</span>
           </div>
-          <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100">
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800/50">
             <div
               className="h-full rounded-full bg-primary transition-all duration-500"
               style={{ width: `${categoryPct}%` }}
@@ -238,7 +238,7 @@ export default function DiagnosisInProgress() {
                     ? 'bg-primary text-white ring-2 ring-primary/30'
                     : isAnswered
                     ? 'bg-success/10 text-success'
-                    : 'bg-gray-100 text-gray-400'
+                    : 'bg-gray-100 text-gray-400 dark:bg-gray-800/50 dark:text-gray-500'
                 }`}
               >
                 {isAnswered ? <Check className="h-3.5 w-3.5" /> : <Circle className="h-3 w-3" />}
@@ -247,13 +247,13 @@ export default function DiagnosisInProgress() {
           })}
         </div>
 
-        <div className="flex items-center justify-between text-sm text-gray-500">
+        <div className="flex items-center justify-between text-sm text-gray-500 dark:text-dark-text-secondary">
           <span className="font-medium">
             PREGUNTA {currentIndex + 1} / {questions.length}
           </span>
           <div className="flex items-center gap-3">
             {remainingQuestions > 0 && (
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-400 dark:text-dark-text-secondary">
                 ~{estimatedMinutes} min restante{estimatedMinutes !== 1 ? 's' : ''}
               </span>
             )}
@@ -262,7 +262,7 @@ export default function DiagnosisInProgress() {
         </div>
 
         <Card className="space-y-6">
-          <p className="text-base font-medium text-gray-900">
+          <p className="text-base font-medium text-gray-900 dark:text-dark-text">
             {currentQuestion?.texto}
           </p>
 

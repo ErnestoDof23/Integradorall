@@ -29,7 +29,7 @@ export default function LandingPage() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-dark-bg">
       <Helmet>
         <title>Diagnostico Inmobiliario - Evalua la Accesibilidad de tu Inmueble</title>
         <meta name="description" content="Herramienta gratuita para evaluar condiciones de accesibilidad de inmuebles. Reportes PDF profesionales, compartir en redes sociales." />
@@ -93,12 +93,12 @@ export default function LandingPage() {
       </header>
 
       {/* Stats */}
-      <section className="border-b bg-gray-50 py-12">
+      <section className="border-b border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-surface py-12">
         <div className="mx-auto grid max-w-4xl grid-cols-2 gap-8 px-4 sm:grid-cols-4 sm:px-6">
           {stats.map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-3xl font-bold text-primary">{s.value}</div>
-              <div className="mt-1 text-sm text-gray-500">{s.label}</div>
+              <div className="mt-1 text-sm text-gray-500 dark:text-dark-text-secondary">{s.label}</div>
             </div>
           ))}
         </div>
@@ -107,16 +107,16 @@ export default function LandingPage() {
       {/* Features */}
       <section id="features" className="py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="text-center text-3xl font-bold text-gray-900 sm:text-4xl">Todo lo que necesitas</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-gray-500">
+          <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-dark-text sm:text-4xl">Todo lo que necesitas</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-gray-500 dark:text-dark-text-secondary">
             Desde la creacion del proyecto hasta el reporte final, todo en una sola herramienta.
           </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((f) => (
               <Card key={f.title} className="p-6">
                 <f.icon className="h-10 w-10 text-primary" />
-                <h3 className="mt-4 text-lg font-semibold text-gray-900">{f.title}</h3>
-                <p className="mt-2 text-sm text-gray-500">{f.desc}</p>
+                <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-dark-text">{f.title}</h3>
+                <p className="mt-2 text-sm text-gray-500 dark:text-dark-text-secondary">{f.desc}</p>
               </Card>
             ))}
           </div>
@@ -124,9 +124,9 @@ export default function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section className="bg-gray-50 py-16 sm:py-24">
+      <section className="bg-gray-50 dark:bg-dark-surface py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="text-center text-3xl font-bold text-gray-900 sm:text-4xl">Como funciona</h2>
+          <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-dark-text sm:text-4xl">Como funciona</h2>
           <div className="mt-12 grid gap-8 md:grid-cols-3">
             {[
               { step: '1', title: 'Crea tu proyecto', desc: 'Registrate, crea un proyecto y completa los datos del inmueble.' },
@@ -137,8 +137,8 @@ export default function LandingPage() {
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-xl font-bold text-white">
                   {s.step}
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-gray-900">{s.title}</h3>
-                <p className="mt-2 text-sm text-gray-500">{s.desc}</p>
+                <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-dark-text">{s.title}</h3>
+                <p className="mt-2 text-sm text-gray-500 dark:text-dark-text-secondary">{s.desc}</p>
               </div>
             ))}
           </div>
@@ -148,7 +148,7 @@ export default function LandingPage() {
       {/* Testimonials */}
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <h2 className="text-center text-3xl font-bold text-gray-900 sm:text-4xl">Lo que dicen nuestros usuarios</h2>
+          <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-dark-text sm:text-4xl">Lo que dicen nuestros usuarios</h2>
           <div className="mt-12 grid gap-6 sm:grid-cols-3">
             {testimonials.map((t) => (
               <Card key={t.name} className="flex flex-col p-6">
@@ -156,14 +156,14 @@ export default function LandingPage() {
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-4 w-4 ${i < t.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-200'}`}
+                      className={`h-4 w-4 ${i < t.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-200 dark:text-gray-600'}`}
                     />
                   ))}
                 </div>
-                <p className="mt-4 flex-1 text-sm text-gray-600">&ldquo;{t.text}&rdquo;</p>
-                <div className="mt-4 border-t pt-4">
-                  <p className="text-sm font-semibold text-gray-900">{t.name}</p>
-                  <p className="text-xs text-gray-500">{t.role}</p>
+                <p className="mt-4 flex-1 text-sm text-gray-600 dark:text-dark-text-secondary">&ldquo;{t.text}&rdquo;</p>
+                <div className="mt-4 border-t border-gray-200 dark:border-dark-border pt-4">
+                  <p className="text-sm font-semibold text-gray-900 dark:text-dark-text">{t.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-dark-text-secondary">{t.role}</p>
                 </div>
               </Card>
             ))}
@@ -190,13 +190,13 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-white py-8">
+      <footer className="border-t border-gray-200 dark:border-dark-border bg-white dark:bg-dark-surface py-8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6">
-          <div className="flex items-center gap-2 text-gray-500">
+          <div className="flex items-center gap-2 text-gray-500 dark:text-dark-text-secondary">
             <Building2 className="h-5 w-5" />
             <span className="text-sm">&copy; 2026 Diagnostico Inmobiliario. Proyecto 1.</span>
           </div>
-          <div className="flex gap-4 text-sm text-gray-400">
+          <div className="flex gap-4 text-sm text-gray-400 dark:text-gray-500">
             <span>Accesibilidad WCAG 2.1 AA</span>
             <span>PWA</span>
             <span>React + TypeScript</span>

@@ -1,5 +1,65 @@
 # Changelog
 
+## [1.0.0-sprint5-frontend-proy1] - 2026-06-24
+
+### Added - Semana 5 Features (Consolidacion Final)
+
+#### Modo Oscuro (Dark Mode)
+- ThemeContext con persistencia en localStorage
+- ThemeToggle (icono Luna/Sol) en Header de todas las paginas
+- CSS variables dark mode (dark-bg, dark-surface, dark-card, dark-border, dark-text, dark-text-secondary)
+- Deteccion automatica de preferencia del sistema (prefers-color-scheme)
+- Soporte completo en 27 archivos: componentes UI, paginas, graficas
+
+#### PDF Multi-idioma (Espanol / Ingles)
+- Objeto de traducciones completo para ES y EN
+- Parametro `lang` en `generatePDFManual()`
+- Selector de idioma en pagina de Resultados
+- Textos traducidos: titulo, categorias, score labels, recomendaciones, footer
+- Fechas formateadas segun locale (es-MX / en-US)
+- Nombre de archivo diferenciado (`diagnostico-nombre-en.pdf` para ingles)
+- Tracking analytics con language parameter
+
+#### Grafica de Evolucion
+- Nueva pagina `/evolucion` (EvolutionChart.tsx)
+- Grafica SVG lineal con area de relleno y gradiente
+- Puntos interactivos con hover (muestra %, label, fecha)
+- Estadisticas: promedio, maximo, minimo
+- Lista historica detallada debajo de la grafica
+- Deteccion de color por score (verde/amarillo/rojo)
+- Empty state cuando no hay diagnosticos completados
+- Acceso desde Dashboard via boton "Evolucion"
+
+### Fixed - Bugs Semana 5
+- Dark mode: todos los componentes responden al tema correctamente
+- PDF Safari: configuracion allowTaint + imageTimeout para compatibilidad
+- Share movil: fallback completo a clipboard + boton Copiar
+- Progreso: persistencia de DiagnosisContext en localStorage
+- TypeScript: 0 errores, ESLint: 0 errores
+
+### UX/UI Improvements - Semana 5
+- Transiciones suaves entre temas claro/oscuro
+- Selector de idioma visual con icono Globe
+- Skeleton loaders actualizados para dark mode
+- Toast notifications con soporte dark mode
+- Formularios (Input, Select, TextArea) con estilos dark
+- Cards y botones con variantes oscuras
+- Header sticky con ThemeToggle integrado
+- LandingPage con gradientes adaptados al tema
+- Login/Register con fondos adaptados al tema
+- GaugeCircular con stroke adaptado al tema
+- GraficaBarras con fondo de barras adaptado
+
+### Documentation - Semana 5
+- ACCEPTANCE_FINAL_SEMANA5.md - 74 pruebas de aceptacion
+- DELIVERY_DOCS.md - documentacion de entrega completa
+- ACTION_ITEMS.md - 10/11 items completados
+- USER_GUIDE_COMPLETE_PROY1.md - guia de usuario consolidada
+- REGRESSION_FINAL_SEMANA5.md - pruebas de regresion finales
+- CHANGELOG.md - este archivo
+
+---
+
 ## [1.0.0-semana5-frontend-proy1] - 2026-06-22
 
 ### Fixed - Bugs Criticos
