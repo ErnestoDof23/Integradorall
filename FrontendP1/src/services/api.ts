@@ -192,4 +192,61 @@ export async function getRespuestas(
   return data;
 }
 
+// --- Admin ---
+export interface AdminDiagnostico {
+  id: string;
+  proyecto_nombre: string;
+  direccion: string;
+  cliente: string;
+  usuario_nombre: string;
+  usuario_email: string;
+  estado: string;
+  porcentaje: number;
+  created_at: string;
+  completed_at: string;
+}
+
+export interface AdminUsuario {
+  id: string;
+  nombre: string;
+  email: string;
+  created_at: string;
+  total_diagnosticos: number;
+}
+
+export interface AdminCategoriaPreguntas {
+  categoria_id: string;
+  nombre: string;
+  preguntas: Question[];
+}
+
+export async function adminGetDiagnosticos(): Promise<AdminDiagnostico[]> {
+  const { data } = await api.get<AdminDiagnostico[]>('/admin/diagnosticos');
+  return data;
+}
+
+export async function adminGetUsuarios(): Promise<AdminUsuario[]> {
+  const { data } = await api.get<AdminUsuario[]>('/admin/usuarios');
+  return data;
+}
+
+export async function adminGetPreguntas(): Promise<AdminCategoriaPreguntas[]> {
+  const { data } = await api.get<AdminCategoriaPreguntas[]>('/admin/preguntas');
+  return data;
+}
+
+export async function adminCreatePregunta(data: { categoria_id: string; texto: string; orden?: number }): Promise<Question> {
+  const { data: res } = await api.post<Question>('/admin/preguntas', data);
+  return res;
+}
+
+export async function adminUpdatePregunta(id: string, data: { texto: string; orden?: number }): Promise<Question> {
+  const { data: res } = await api.put<Question>(`/admin/preguntas/${id}`, data);
+  return res;
+}
+
+export async function adminDeletePregunta(id: string): Promise<void> {
+  await api.delete(`/admin/preguntas/${id}`);
+}
+
 export default api;
