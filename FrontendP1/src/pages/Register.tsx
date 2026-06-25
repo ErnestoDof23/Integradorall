@@ -45,7 +45,7 @@ export default function Register() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-white dark:from-gray-900 dark:to-dark-bg px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-pink-50 to-white dark:from-gray-900 dark:to-dark-bg px-4">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-white">

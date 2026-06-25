@@ -88,7 +88,7 @@ export default function ShareButtons({ title, percentage, url }: ShareButtonsPro
       <button
         onClick={handleLinkedIn}
         aria-label="Compartir en LinkedIn"
-        className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 cursor-pointer"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-pink-200 bg-pink-50 px-3 py-1.5 text-xs font-medium text-pink-700 hover:bg-pink-100 cursor-pointer"
       >
         <ExternalLink className="h-3.5 w-3.5" />
         LinkedIn

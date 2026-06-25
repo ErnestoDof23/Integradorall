@@ -38,7 +38,7 @@ export default function LandingPage() {
       </Helmet>
 
       {/* Hero */}
-      <header className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-blue-700">
+      <header className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-pink-700">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTR2Mkg4VjI4aDI4ek0xMiAxNnYySDR2LTJoOHptMjQgMHYySDI4di0yaDh6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
         <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
@@ -67,7 +67,7 @@ export default function LandingPage() {
           <h1 className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
             Evalua la accesibilidad de tus inmuebles
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-blue-100 sm:text-xl">
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-pink-100 sm:text-xl">
             Herramienta profesional para diagnosticar condiciones de accesibilidad.
             Reportes PDF, compartir en redes sociales y seguimiento de progreso.
           </p>
@@ -175,7 +175,7 @@ export default function LandingPage() {
       <section className="bg-primary py-16 sm:py-20">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
           <h2 className="text-3xl font-bold text-white sm:text-4xl">Comienza a diagnosticar hoy</h2>
-          <p className="mx-auto mt-4 max-w-xl text-blue-100">
+          <p className="mx-auto mt-4 max-w-xl text-pink-100">
             Es gratuito, rapido y accesible. Registrate en un minuto y empieza a evaluar tus inmuebles.
           </p>
           <Button

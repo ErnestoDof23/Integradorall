@@ -98,7 +98,7 @@ export default function OnboardingTour({ forceRun = false }: OnboardingTourProps
       }}
       styles={{
         options: {
-          primaryColor: '#2563eb',
+          primaryColor: '#E91E8C',
           textColor: '#1f2937',
           backgroundColor: '#ffffff',
           overlayColor: 'rgba(0,0,0,0.5)',
@@ -110,7 +110,7 @@ export default function OnboardingTour({ forceRun = false }: OnboardingTourProps
           padding: 16,
         },
         buttonNext: {
-          backgroundColor: '#2563eb',
+          backgroundColor: '#E91E8C',
           borderRadius: 8,
           padding: '8px 16px',
           fontSize: 14,

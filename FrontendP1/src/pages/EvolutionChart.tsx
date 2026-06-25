@@ -190,7 +190,7 @@ export default function EvolutionChart() {
 
                   {/* Line */}
                   {dataPoints.length > 1 && (
-                    <path d={pathD} fill="none" stroke="#1d4ed8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d={pathD} fill="none" stroke="#E91E8C" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                   )}
 
                   {/* Data points */}
@@ -260,8 +260,8 @@ export default function EvolutionChart() {
                   {/* Gradient definition */}
                   <defs>
                     <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#1d4ed8" stopOpacity="0.4" />
-                      <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0.05" />
+                      <stop offset="0%" stopColor="#E91E8C" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="#E91E8C" stopOpacity="0.05" />
                     </linearGradient>
                   </defs>
                 </svg>

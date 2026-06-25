@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const bg = {
     success: 'border-success/30 bg-green-50 dark:bg-green-900/30 dark:border-green-700/50',
     error: 'border-danger/30 bg-red-50 dark:bg-red-900/30 dark:border-red-700/50',
-    info: 'border-primary/30 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-700/50',
+    info: 'border-primary/30 bg-pink-50 dark:bg-pink-900/30 dark:border-pink-700/50',
   };
 
   return (

@@ -9,7 +9,7 @@ interface GaugeCircularProps {
 
 function getColor(pct: number): string {
   if (pct >= 80) return '#16a34a';
-  if (pct >= 60) return '#2563eb';
+  if (pct >= 60) return '#E91E8C';
   if (pct >= 40) return '#d97706';
   return '#dc2626';
 }

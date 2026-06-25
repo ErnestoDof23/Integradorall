@@ -7,13 +7,13 @@ interface StatusBadgeProps {
 
 const styles = {
   pendiente: 'bg-gray-100 text-gray-600',
-  en_proceso: 'bg-blue-100 text-blue-700',
+  en_proceso: 'bg-pink-100 text-pink-700',
   completado: 'bg-green-100 text-green-700',
 };
 
 const dots = {
   pendiente: 'bg-gray-400',
-  en_proceso: 'bg-blue-500',
+  en_proceso: 'bg-pink-500',
   completado: 'bg-green-500',
 };
 
