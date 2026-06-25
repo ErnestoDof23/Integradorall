@@ -63,6 +63,16 @@ export default function Login() {
               value={form.email}
               onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
               error={errors.email}
+              data-help="Escribe tu correo electronico registrado"
+            />
+            <Input
+              label="Contrasena"
+              type="password"
+              placeholder="••••••••"
+              value={form.password}
+              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+              error={errors.password}
+              data-help="Escribe tu contrasena"
             />
             <Input
               label="Contraseña"

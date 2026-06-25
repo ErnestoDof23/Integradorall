@@ -74,3 +74,35 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Help mode: show tooltips on elements with [data-help] */
+.help-mode [data-help] {
+  position: relative;
+}
+.help-mode [data-help]::after {
+  content: attr(data-help);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 999;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.help-mode [data-help]::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% - 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+  z-index: 999;
+  pointer-events: none;
+}

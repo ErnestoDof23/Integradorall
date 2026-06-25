@@ -51,20 +51,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         aria-live="polite"
         aria-label="Notificaciones"
-        className="fixed bottom-4 right-4 z-50 flex flex-col gap-2"
+        className="fixed inset-x-0 top-24 z-50 flex flex-col items-center gap-3"
       >
         {toasts.map((t) => (
           <div
             key={t.id}
-            role="status"
-            className={`flex items-center gap-3 rounded-lg border px-4 py-3 shadow-lg animate-slide-in ${bg[t.type]}`}
+            role="alert"
+            className={`flex w-full max-w-md items-center gap-3 rounded-xl border-2 px-5 py-4 shadow-2xl animate-slide-in ${bg[t.type]}`}
           >
             {icons[t.type]}
-            <span className="text-sm text-gray-800 dark:text-dark-text">{t.message}</span>
+            <span className="flex-1 text-sm font-medium text-gray-800 dark:text-dark-text">{t.message}</span>
             <button
               onClick={() => removeToast(t.id)}
               aria-label="Cerrar notificacion"
-              className="ml-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 cursor-pointer"
+              className="ml-2 rounded-lg p-1 text-gray-400 hover:bg-gray-200/50 hover:text-gray-600 dark:text-gray-500 dark:hover:bg-gray-700/50 dark:hover:text-gray-300 cursor-pointer"
             >
               <X className="h-4 w-4" aria-hidden="true" />
             </button>

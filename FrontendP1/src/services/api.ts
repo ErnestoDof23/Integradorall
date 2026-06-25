@@ -249,4 +249,14 @@ export async function adminDeletePregunta(id: string): Promise<void> {
   await api.delete(`/admin/preguntas/${id}`);
 }
 
+export async function adminToggleBlockUser(id: string): Promise<{ blocked: boolean }> {
+  const { data } = await api.put<{ blocked: boolean }>(`/admin/usuarios/${id}/block`);
+  return data;
+}
+
+export async function adminUpdateUserRole(id: string, role: string): Promise<{ role: string }> {
+  const { data } = await api.put<{ role: string }>(`/admin/usuarios/${id}/role`, { role });
+  return data;
+}
+
 export default api;

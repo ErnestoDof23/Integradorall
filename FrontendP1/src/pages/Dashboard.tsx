@@ -97,7 +97,7 @@ export default function Dashboard() {
     if (!validate()) return;
     setSaving(true);
     try {
-      await createProyecto({
+      const nuevo = await createProyecto({
         nombre: form.nombre,
         cliente: form.cliente,
         direccion: form.direccion,
@@ -108,9 +108,8 @@ export default function Dashboard() {
       });
       showToast('Proyecto creado exitosamente', 'success');
       setShowModal(false);
-      setForm(initialForm);
-      const data = await listProyectos();
-      setProyectos(data);
+      setForm({ ...initialForm, fecha: new Date().toISOString().split('T')[0] });
+      setProyectos((prev) => [...prev, nuevo]);
     } catch {
       showToast('Error al crear proyecto', 'error');
     } finally {
@@ -176,7 +175,7 @@ export default function Dashboard() {
               {proyectos.length} proyecto{proyectos.length !== 1 ? 's' : ''}
             </p>
           </div>
-          <Button onClick={() => setShowModal(true)} data-tour="nuevo-proyecto">
+          <Button onClick={() => setShowModal(true)} data-tour="nuevo-proyecto" data-help="Crear un nuevo proyecto de evaluacion">
             <Plus className="h-4 w-4" />
             Nuevo Proyecto
           </Button>
@@ -240,6 +239,7 @@ export default function Dashboard() {
                   <Button
                     size="sm"
                     className="flex-1"
+                    data-help="Iniciar diagnostico de accesibilidad para este proyecto"
                     onClick={() => {
                       localStorage.setItem('dashboard_proyecto', JSON.stringify(p));
                       navigate('/datos-inmueble');
