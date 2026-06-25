@@ -79,7 +79,7 @@ export default function Login() {
                   Ingresando...
                 </>
               ) : (
-                'Todo Accesible'
+                'Iniciar Sesión'
               )}
             </Button>
           </form>
