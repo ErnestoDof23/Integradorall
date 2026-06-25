@@ -14,7 +14,7 @@ const ANSWER_OPTIONS = [
 ];
 
 export default function DiagnosisInProgress() {
-  const { categoriaId } = useParams<{ categoriaId: string }>();
+  const { categoryId: categoriaId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
   const { state, setAnswer } = useDiagnosis();
 
