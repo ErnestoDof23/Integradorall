@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { AuthProvider, useAuth } from './hooks/useAuth';
+import { AuthProvider } from './hooks/useAuth';
 import { DiagnosisProvider } from './hooks/useDiagnosis';
 import { ThemeProvider } from './hooks/useTheme';
 import { ToastProvider } from './components/ui/Toast';
@@ -31,10 +31,10 @@ function PageSpinner() {
 }
 
 function NavigateToAppropriate() {
-  const { token } = useAuth();
   const location = useLocation();
+  const hasToken = !!localStorage.getItem('token');
 
-  if (token) {
+  if (hasToken) {
     return <Navigate to="/dashboard" state={{ from: location }} replace />;
   }
   return <Navigate to="/landing" replace />;
