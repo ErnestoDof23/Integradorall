@@ -74,14 +74,6 @@ export default function Login() {
               error={errors.password}
               data-help="Escribe tu contrasena"
             />
-            <Input
-              label="Contraseña"
-              type="password"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-              error={errors.password}
-            />
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? (
                 <>
