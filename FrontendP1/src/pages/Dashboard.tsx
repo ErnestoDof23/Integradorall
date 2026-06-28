@@ -13,6 +13,7 @@ import {
   X,
   History,
   TrendingUp,
+  Shield,
 } from 'lucide-react';
 import { Button, Card, Header, Input, Select } from '../components/ui';
 import { useAuth } from '../hooks/useAuth';
@@ -141,6 +142,16 @@ export default function Dashboard() {
         <meta name="description" content="Panel de control para gestionar diagnosticos de inmuebles" />
       </Helmet>
       <Header title="Dashboard" showBack={false}>
+        {user?.email === 'demo@accesibilidad.com' && (
+          <button
+            onClick={() => navigate('/admin')}
+            data-help="Panel de administracion"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-primary hover:bg-primary/10 cursor-pointer"
+          >
+            <Shield className="h-4 w-4" />
+            Admin
+          </button>
+        )}
         <button
           onClick={() => navigate('/evolucion')}
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
