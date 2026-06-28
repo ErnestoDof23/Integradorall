@@ -20,7 +20,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../components/ui/Toast';
 import { listProyectos, createProyecto, deleteProyecto } from '../services/api';
 import { trackEvent } from '../services/analytics';
-import OnboardingTour from '../components/OnboardingTour';
+import OnboardingTour, { TourButton } from '../components/OnboardingTour';
 import type { Proyecto } from '../types';
 
 const MEXICAN_STATES = [
@@ -136,12 +136,13 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-bg">
-      <OnboardingTour />
+      <OnboardingTour page="dashboard" />
       <Helmet>
         <title>Dashboard | Diagnostico Inmobiliario</title>
         <meta name="description" content="Panel de control para gestionar diagnosticos de inmuebles" />
       </Helmet>
       <Header title="Dashboard" showBack={false}>
+        <TourButton page="dashboard" />
         {user?.email === 'demo@accesibilidad.com' && (
           <button
             onClick={() => navigate('/admin')}
@@ -179,7 +180,7 @@ export default function Dashboard() {
       <main id="main-content" className="mx-auto max-w-5xl px-4 py-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-dark-text">
+            <h2 data-tour="dashboard-hello" className="text-lg font-semibold text-gray-900 dark:text-dark-text">
               Hola, {user?.nombre || 'Usuario'}
             </h2>
             <p className="text-sm text-gray-500 dark:text-dark-text-secondary">

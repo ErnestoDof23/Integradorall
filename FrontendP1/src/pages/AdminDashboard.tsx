@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Card, Header, Button, Input } from '../components/ui';
 import { useToast } from '../components/ui/Toast';
+import OnboardingTour, { TourButton } from '../components/OnboardingTour';
 import {
   adminGetDiagnosticos, adminGetPreguntas, adminGetUsuarios,
   adminCreatePregunta, adminUpdatePregunta, adminDeletePregunta,
@@ -24,10 +25,12 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-bg">
+      <OnboardingTour page="admin" />
       <Helmet>
         <title>Admin | TodoAccesible</title>
       </Helmet>
       <Header title="Panel de Administracion" showBack>
+        <TourButton page="admin" />
         <span className="text-sm text-gray-500 dark:text-dark-text-secondary">demo@accesibilidad.com</span>
       </Header>
 
@@ -35,7 +38,7 @@ export default function AdminDashboard() {
         {tab === 'panel' && (
           <>
             <div className="grid gap-4 sm:grid-cols-3">
-              <button onClick={() => setTab('diagnosticos')} className="cursor-pointer">
+              <button data-tour="admin-diagnosticos" onClick={() => setTab('diagnosticos')} className="cursor-pointer">
                 <Card className="flex items-center gap-4 p-6 transition-all hover:shadow-lg hover:scale-[1.02]">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100 dark:bg-green-900/30">
                     <ClipboardList className="h-7 w-7 text-green-600 dark:text-green-400" />
@@ -46,7 +49,7 @@ export default function AdminDashboard() {
                   </div>
                 </Card>
               </button>
-              <button onClick={() => setTab('preguntas')} className="cursor-pointer">
+              <button data-tour="admin-preguntas" onClick={() => setTab('preguntas')} className="cursor-pointer">
                 <Card className="flex items-center gap-4 p-6 transition-all hover:shadow-lg hover:scale-[1.02]">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
                     <FileText className="h-7 w-7 text-primary" />
@@ -57,7 +60,7 @@ export default function AdminDashboard() {
                   </div>
                 </Card>
               </button>
-              <button onClick={() => setTab('usuarios')} className="cursor-pointer">
+              <button data-tour="admin-usuarios" onClick={() => setTab('usuarios')} className="cursor-pointer">
                 <Card className="flex items-center gap-4 p-6 transition-all hover:shadow-lg hover:scale-[1.02]">
                   <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-100 dark:bg-purple-900/30">
                     <Users className="h-7 w-7 text-purple-600 dark:text-purple-400" />

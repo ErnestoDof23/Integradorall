@@ -4,14 +4,12 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './hooks/useAuth';
 import { DiagnosisProvider } from './hooks/useDiagnosis';
 import { ThemeProvider } from './hooks/useTheme';
-import { HelpProvider } from './hooks/useHelp';
 import { ToastProvider } from './components/ui/Toast';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import GuestRoute from './components/GuestRoute';
 import SkipLink from './components/SkipLink';
 import FeedbackButton from './components/FeedbackButton';
-import HelpToggle from './components/HelpToggle';
 import Login from './pages/Login';
 import Register from './pages/Register';
 
@@ -57,11 +55,10 @@ export default function App() {
       <HelmetProvider>
         <ToastProvider>
           <ThemeProvider>
-            <HelpProvider>
-              <AuthProvider>
-                <BrowserRouter>
-                  <SkipLink />
-                  <FeedbackButton />
+            <AuthProvider>
+              <BrowserRouter>
+                <SkipLink />
+                <FeedbackButton />
                 <Routes>
                   <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
                   <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
@@ -141,9 +138,7 @@ export default function App() {
                   <Route path="*" element={<NavigateToAppropriate />} />
                 </Routes>
               </BrowserRouter>
-              <div className="fixed bottom-4 left-4 z-50"><HelpToggle /></div>
               </AuthProvider>
-            </HelpProvider>
           </ThemeProvider>
         </ToastProvider>
       </HelmetProvider>

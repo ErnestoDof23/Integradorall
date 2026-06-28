@@ -1,8 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { Joyride, ACTIONS, EVENTS } from 'react-joyride';
-import { useAuth } from '../hooks/useAuth';
+import { Accessibility } from 'lucide-react';
 
-const TOUR_KEY = 'onboarding_tour_completed';
+const TOUR_STORAGE_KEY = 'onboarding_tour_active';
 
 interface TourStep {
   target: string;
@@ -10,70 +10,45 @@ interface TourStep {
   placement?: string;
 }
 
-const tourSteps: TourStep[] = [
-  {
-    target: 'body',
-    content: 'Bienvenido a Diagnostico Inmobiliario! Te guiaremos por las funcionalidades principales.',
-    placement: 'center',
-  },
-  {
-    target: '[data-tour="nuevo-proyecto"]',
-    content: 'Comienza creando un nuevo proyecto de diagnostico.',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="proyecto-card"]',
-    content: 'Tus proyectos aparecen aqui. Puedes diagnosticar, editar o eliminar.',
-    placement: 'top',
-  },
-  {
-    target: '[data-tour="historial-link"]',
-    content: 'Accede a todos tus diagnosticos anteriores desde aqui.',
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="header-user"]',
-    content: 'Tu perfil y boton de cerrar sesion.',
-    placement: 'bottom',
-  },
+const LANDING_STEPS: TourStep[] = [
+  { target: '[data-tour="landing-hero"]', content: 'Bienvenido a TodoAccesible. Herramienta para diagnosticar accesibilidad de inmuebles.', placement: 'bottom' },
+  { target: '[data-tour="landing-start"]', content: 'Haz clic aqui para comenzar tu primer diagnostico.', placement: 'top' },
+  { target: '[data-tour="landing-features"]', content: 'Estas son las funcionalidades principales de la herramienta.', placement: 'top' },
+  { target: '[data-tour="landing-steps"]', content: 'Son 3 simples pasos para completar un diagnostico.', placement: 'top' },
+  { target: '[data-tour="theme-toggle"]', content: 'Cambia entre modo claro y oscuro aqui.', placement: 'bottom' },
+  { target: '[data-tour="help-toggle"]', content: 'Activa esta guia de ayuda en cualquier momento.', placement: 'top' },
 ];
 
 const DASHBOARD_STEPS: TourStep[] = [
-  {
-    target: '[data-tour="feedback-btn"]',
-    content: 'Tienes sugerencias? Haz clic aqui para enviarnos tu opinion.',
-    placement: 'top',
-  },
+  { target: '[data-tour="dashboard-hello"]', content: 'Bienvenido a tu dashboard. Aqui ves tus proyectos.', placement: 'bottom' },
+  { target: '[data-tour="nuevo-proyecto"]', content: 'Crea un nuevo proyecto para comenzar un diagnostico.', placement: 'bottom' },
+  { target: '[data-tour="proyecto-card"]', content: 'Tus proyectos aparecen aqui. Diagnosticar para evaluar.', placement: 'top' },
+  { target: '[data-tour="historial-link"]', content: 'Accede a todos tus diagnosticos anteriores.', placement: 'bottom' },
+  { target: '[data-tour="theme-toggle"]', content: 'Cambia el tema visual de la aplicacion.', placement: 'bottom' },
+];
+
+const ADMIN_STEPS: TourStep[] = [
+  { target: '[data-tour="admin-diagnosticos"]', content: 'Ve todos los diagnosticos de todos los usuarios.', placement: 'bottom' },
+  { target: '[data-tour="admin-preguntas"]', content: 'Gestiona las preguntas del cuestionario. Agrega, edita o elimina.', placement: 'bottom' },
+  { target: '[data-tour="admin-usuarios"]', content: 'Administra usuarios. Puedes bloquearlos o cambiar su rol.', placement: 'bottom' },
 ];
 
 interface OnboardingTourProps {
-  forceRun?: boolean;
+  page: 'landing' | 'dashboard' | 'admin';
 }
 
-export default function OnboardingTour({ forceRun = false }: OnboardingTourProps) {
-  const { user } = useAuth();
-  const [run, setRun] = useState(false);
-  const allSteps = [...tourSteps, ...DASHBOARD_STEPS];
+export default function OnboardingTour({ page }: OnboardingTourProps) {
+  const [run, setRun] = useState(() => {
+    return localStorage.getItem(TOUR_STORAGE_KEY) === page;
+  });
 
-  useEffect(() => {
-    if (forceRun) {
-      const timer = setTimeout(() => setRun(true), 0);
-      return () => clearTimeout(timer);
-    }
-    const completed = localStorage.getItem(TOUR_KEY);
-    const isFirstVisit = !completed && user;
-    if (isFirstVisit) {
-      const timer = setTimeout(() => setRun(true), 1000);
-      return () => clearTimeout(timer);
-    }
-    return undefined;
-  }, [user, forceRun]);
+  const steps = page === 'landing' ? LANDING_STEPS : page === 'dashboard' ? DASHBOARD_STEPS : ADMIN_STEPS;
 
   const handleCallback = useCallback((data: Record<string, string>) => {
     const { action, type } = data;
-    if (action === ACTIONS.SKIP || type === EVENTS.TOUR_END) {
+    if (action === ACTIONS.SKIP || type === EVENTS.TOUR_END || action === ACTIONS.CLOSE) {
       setRun(false);
-      localStorage.setItem(TOUR_KEY, 'true');
+      localStorage.removeItem(TOUR_STORAGE_KEY);
     }
   }, []);
 
@@ -84,7 +59,7 @@ export default function OnboardingTour({ forceRun = false }: OnboardingTourProps
     <JoyrideAny
       run={run}
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      steps={allSteps as any}
+      steps={steps as any}
       callback={handleCallback}
       continuous
       showProgress
@@ -94,7 +69,7 @@ export default function OnboardingTour({ forceRun = false }: OnboardingTourProps
         close: 'Cerrar',
         last: 'Finalizar',
         next: 'Siguiente',
-        skip: 'Saltar tour',
+        skip: 'Saltar guia',
       }}
       styles={{
         options: {
@@ -105,44 +80,31 @@ export default function OnboardingTour({ forceRun = false }: OnboardingTourProps
           spotlightPadding: 8,
           zIndex: 1000,
         },
-        tooltip: {
-          borderRadius: 12,
-          padding: 16,
-        },
-        buttonNext: {
-          backgroundColor: '#E91E8C',
-          borderRadius: 8,
-          padding: '8px 16px',
-          fontSize: 14,
-          fontWeight: 600,
-        },
-        buttonBack: {
-          color: '#6b7280',
-          fontSize: 14,
-        },
-        buttonSkip: {
-          color: '#9ca3af',
-          fontSize: 13,
-        },
+        tooltip: { borderRadius: 12, padding: 16 },
+        buttonNext: { backgroundColor: '#E91E8C', borderRadius: 8, padding: '8px 16px', fontSize: 14, fontWeight: 600 },
+        buttonBack: { color: '#6b7280', fontSize: 14 },
+        buttonSkip: { color: '#9ca3af', fontSize: 13 },
       /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       } as any}
     />
   );
 }
 
-export function TourTriggerButton() {
-  const handleRestart = () => {
-    localStorage.removeItem(TOUR_KEY);
+export function TourButton({ page }: { page: 'landing' | 'dashboard' | 'admin' }) {
+  const startTour = () => {
+    localStorage.setItem(TOUR_STORAGE_KEY, page);
     window.location.reload();
   };
 
   return (
     <button
-      onClick={handleRestart}
-      className="text-sm text-primary underline hover:text-primary/80"
-      aria-label="Reiniciar tour guiado"
+      onClick={startTour}
+      data-tour="help-toggle"
+      aria-label="Iniciar guia de ayuda"
+      title="Guia de ayuda"
+      className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 cursor-pointer"
     >
-      Ver tour guiado
+      <Accessibility className="h-5 w-5" aria-hidden="true" />
     </button>
   );
 }

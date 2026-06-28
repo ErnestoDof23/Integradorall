@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Building2, BarChart3, Share2, Shield, ArrowRight, Star } from 'lucide-react';
 import { Card } from '../components/ui';
 import ThemeToggle from '../components/ThemeToggle';
+import OnboardingTour, { TourButton } from '../components/OnboardingTour';
 import { useAuth } from '../hooks/useAuth';
 
 const features = [
@@ -31,6 +32,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-dark-bg">
+      <OnboardingTour page="landing" />
       <Helmet>
         <title>Diagnostico Inmobiliario - Evalua la Accesibilidad de tu Inmueble</title>
         <meta name="description" content="Herramienta gratuita para evaluar condiciones de accesibilidad de inmuebles. Reportes PDF profesionales, compartir en redes sociales." />
@@ -39,7 +41,7 @@ export default function LandingPage() {
       </Helmet>
 
       {/* Hero */}
-      <header className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-pink-700">
+      <header data-tour="landing-hero" className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-pink-700">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTR2Mkg4VjI4aDI4ek0xMiAxNnYySDR2LTJoOHptMjQgMHYySDI4di0yaDh6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30" />
 
         {/* Nav */}
@@ -48,8 +50,9 @@ export default function LandingPage() {
             <Building2 className="h-8 w-8 text-white" />
             <span className="text-xl font-bold text-white">TodoAccesible</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <ThemeToggle />
+            <TourButton page="landing" />
             {user ? (
               <button
                 onClick={() => navigate('/dashboard')}
@@ -87,6 +90,7 @@ export default function LandingPage() {
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <button
+              data-tour="landing-start"
               onClick={() => user ? navigate('/dashboard') : navigate('/register')}
               className="group flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-bold text-primary shadow-lg transition-all hover:bg-gray-100 hover:shadow-xl cursor-pointer"
             >
@@ -116,7 +120,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-16 sm:py-24">
+      <section id="features" data-tour="landing-features" className="py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-dark-text sm:text-4xl">Todo lo que necesitas</h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-gray-500 dark:text-dark-text-secondary">
@@ -137,7 +141,7 @@ export default function LandingPage() {
       </section>
 
       {/* How it works */}
-      <section className="bg-gray-50 dark:bg-dark-surface py-16 sm:py-24">
+      <section data-tour="landing-steps" className="bg-gray-50 dark:bg-dark-surface py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <h2 className="text-center text-3xl font-bold text-gray-900 dark:text-dark-text sm:text-4xl">Como funciona</h2>
           <div className="mt-12 grid gap-8 md:grid-cols-3">
