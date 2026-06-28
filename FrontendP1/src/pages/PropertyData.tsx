@@ -26,18 +26,20 @@ const PROPERTY_TYPES = [
 
 function getInitialForm(): Property {
   const stored = localStorage.getItem('dashboard_proyecto');
+  const today = new Date().toISOString().split('T')[0];
   if (stored) {
     try {
       const p: Proyecto = JSON.parse(stored);
       localStorage.removeItem('dashboard_proyecto');
       return {
+        id: p.id || undefined,
         nombre: p.nombre || '',
         cliente: p.cliente || '',
         direccion: p.direccion || '',
         estado: p.estado || '',
         ciudad: p.ciudad || '',
         tipo: p.tipo || '',
-        fecha: p.fecha || new Date().toISOString().split('T')[0],
+        fecha: p.fecha || today,
       };
     } catch {
       // ignore
@@ -50,7 +52,7 @@ function getInitialForm(): Property {
     estado: '',
     ciudad: '',
     tipo: '',
-    fecha: new Date().toISOString().split('T')[0],
+    fecha: today,
   };
 }
 
@@ -71,10 +73,11 @@ export default function PropertyData() {
     const errs: Record<string, string> = {};
     if (!form.nombre.trim()) errs.nombre = 'El nombre es obligatorio';
     if (!form.cliente.trim()) errs.cliente = 'El cliente es obligatorio';
-    if (!form.direccion.trim()) errs.direccion = 'La dirección es obligatoria';
+    if (!form.direccion.trim()) errs.direccion = 'La direccion es obligatoria';
     if (!form.estado) errs.estado = 'Selecciona un estado';
     if (!form.ciudad.trim()) errs.ciudad = 'La ciudad es obligatoria';
     if (!form.tipo) errs.tipo = 'Selecciona un tipo de inmueble';
+    if (!form.fecha) errs.fecha = 'La fecha es obligatoria';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -83,7 +86,7 @@ export default function PropertyData() {
     if (!validate()) return;
     setLoading(true);
     try {
-      let proyectoId = state.proyecto_id;
+      let proyectoId = state.proyecto_id || form.id;
 
       if (!proyectoId) {
         const proyecto = await createProyecto({
@@ -97,6 +100,8 @@ export default function PropertyData() {
         });
         proyectoId = proyecto.id;
         setProyectoId(proyecto.id);
+      } else {
+        setProyectoId(proyectoId);
       }
 
       const diagnostico = await createDiagnostico(proyectoId);
@@ -104,6 +109,7 @@ export default function PropertyData() {
       trackEvent('diagnostico_start', { proyecto_id: proyectoId });
 
       setProperty(form);
+      showToast('Datos guardados. Ahora responde el cuestionario de accesibilidad.', 'success');
       navigate('/secciones');
     } catch {
       setErrors({ submit: 'Error al conectar con el servidor. Verifica que el backend este corriendo en localhost:3000' });
@@ -144,7 +150,7 @@ export default function PropertyData() {
           />
 
           <Input
-            label="Cliente"
+            label="Cliente *"
             placeholder="Nombre del cliente"
             value={form.cliente}
             onChange={(e) => update('cliente', e.target.value)}
@@ -152,8 +158,8 @@ export default function PropertyData() {
           />
 
           <Input
-            label="Dirección"
-            placeholder="Calle, número, colonia"
+            label="Direccion *"
+            placeholder="Calle, numero, colonia"
             value={form.direccion}
             onChange={(e) => update('direccion', e.target.value)}
             error={errors.direccion}
@@ -185,10 +191,11 @@ export default function PropertyData() {
               error={errors.tipo}
             />
             <Input
-              label="Fecha de evaluación"
+              label="Fecha de evaluacion *"
               type="date"
               value={form.fecha}
               onChange={(e) => update('fecha', e.target.value)}
+              error={errors.fecha}
             />
           </div>
 

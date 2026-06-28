@@ -106,7 +106,7 @@ export default function Dashboard() {
         tipo: form.tipo,
         fecha: form.fecha,
       });
-      showToast('Proyecto creado exitosamente', 'success');
+      showToast('Proyecto creado. Ahora completa los datos del inmueble para diagnosticar.', 'success');
       setShowModal(false);
       setForm({ ...initialForm, fecha: new Date().toISOString().split('T')[0] });
       setProyectos((prev) => [...prev, nuevo]);

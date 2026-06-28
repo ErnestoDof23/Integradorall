@@ -83,12 +83,13 @@ export default function Sections() {
     try {
       await finalizarDiagnostico(state.diagnostico_id);
       trackEvent('diagnostico_complete', { diagnostico_id: state.diagnostico_id });
-    } catch {
-      showToast('Error al finalizar, pero se mostrara el resultado', 'error');
-    } finally {
-      setFinalizing(false);
+      showToast('Diagnostico completado exitosamente', 'success');
       setShowConfirm(false);
       navigate('/resultado');
+    } catch {
+      showToast('Error al finalizar el diagnostico', 'error');
+    } finally {
+      setFinalizing(false);
     }
   };
 
