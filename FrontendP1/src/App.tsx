@@ -62,7 +62,6 @@ export default function App() {
                 <BrowserRouter>
                   <SkipLink />
                   <FeedbackButton />
-                  <div className="fixed bottom-4 left-4 z-50"><HelpToggle /></div>
                 <Routes>
                   <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
                   <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
@@ -142,6 +141,7 @@ export default function App() {
                   <Route path="*" element={<NavigateToAppropriate />} />
                 </Routes>
               </BrowserRouter>
+              <div className="fixed bottom-4 left-4 z-50"><HelpToggle /></div>
               </AuthProvider>
             </HelpProvider>
           </ThemeProvider>
