@@ -29,8 +29,12 @@ export default function Login() {
     setLoading(true);
     try {
       await login(form.email, form.password);
-      showToast('Inicio de sesión exitoso', 'success');
-      navigate('/dashboard');
+      showToast('Inicio de sesion exitoso', 'success');
+      if (form.email === 'demo@accesibilidad.com') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
